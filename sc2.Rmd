@@ -1,0 +1,81 @@
+---
+title: "Starcraft II"
+output:
+  html_document: default
+  html_notebook:
+    fig_height: 12
+    fig_width: 12
+---
+
+
+
+```{r}
+sc2 <- read.csv('StarCraft2ReplayAnalysis-1.csv')
+library(tidyverse)
+rank <- c('Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Master', 'GrandMaster', 'Professional')
+rank <- factor(rank, levels = c('Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Master', 'GrandMaster', 'Professional'))
+sc2 <- mutate(sc2, League = rank[LeagueIndex])
+ggplot(sc2, mapping = aes(x = League, y = APM, group = League)) + geom_boxplot()
+sc2$TotalHours <- as.integer(sc2$TotalHours)
+sc2$HoursPerWeek <- as.integer(sc2$HoursPerWeek)
+sc2$Age <- as.integer(sc2$Age)
+```
+
+```{r}
+ggplot(sc2 %>% filter(TotalHours < 7500), mapping = aes(x = TotalHours, y = APM, color = League)) + geom_point(alpha = 0.5)
+ggplot(sc2 %>% filter(TotalHours < 2500), mapping = aes(x = TotalHours, y = APM, color = League)) + geom_point(alpha = 0.5)
+ggplot(sc2 %>% filter(TotalHours < 2000), mapping = aes(x = TotalHours, y = APM, color = League)) + geom_point(alpha = 0.5)
+```
+
+```{r}
+ggplot(sc2 %>% filter(HoursPerWeek < 50), mapping = aes(x = HoursPerWeek, y = APM, color = League)) + geom_point()
+```
+```{r}
+
+ggplot(filter(sc2, MaxTimeStamp < 150000), aes(MaxTimeStamp, TotalMapExplored)) + geom_point(alpha = 0.4)
+```
+
+
+```{r}
+sc2 <- mutate(sc2, WeeksPlayed = TotalHours/HoursPerWeek)
+ggplot(filter(sc2, WeeksPlayed < 500), aes(WeeksPlayed, APM, color = LeagueIndex)) + geom_point(size = 0.25) + scale_color_gradientn(colors = rainbow(4))
+ggplot(filter(sc2, WeeksPlayed < 500), aes(WeeksPlayed, ActionLatency, color = LeagueIndex)) + geom_point(size = 0.25) + scale_color_gradientn(colors = rainbow(4)) 
+```
+
+```{r}
+ggplot(sc2, aes(WorkersMade, UniqueUnitsMade, color = League)) + geom_point(size = .3)
+ggplot(sc2, aes(WorkersMade, UniqueUnitsMade, color = WeeksPlayed)) + geom_point(size = .3) + scale_color_gradientn(colors = rainbow(4))
+```
+
+```{r}
+ggplot(sc2, aes(AssignToHotkeys, UniqueHotkeys, color = LeagueIndex)) + geom_point(size = 0.5) + scale_color_gradientn(colors = rainbow(4)) + facet_wrap(~ LeagueIndex) + geom_smooth(method = 'lm', se = FALSE)
+#ggplot()
+```
+
+```{r}
+ggplot(filter(sc2, UniqueHotkeys == 0), aes(LeagueIndex, AssignToHotkeys, color = League)) + geom_bar(stat = 'identity')
+ggplot(sc2, aes(NumberOfPACs, SelectByHotkeys)) + geom_point() + facet_wrap(~League)
+```
+
+```{r}
+continuous <- names(sc2)[-c(1,22)]
+
+for(i in sc2[continuous]){
+  print(ggplot(data = sc2, aes(i)) + geom_density() + xlab(colnames(sc2)[i])) 
+}
+
+```
+
+```{r}
+ggplot(sc2, aes(TotalHours, APM)) + geom_point(alpha = .2) + facet_wrap('League') + geom_smooth(method = 'loess', se = FALSE)
+ggplot(sc2, aes(TotalHours, WorkersMade)) + geom_point(alpha = .2) + facet_wrap('League') + geom_smooth(method = 'loess', se = FALSE)
+```
+```{r}
+ggplot(sc2, aes(TotalHours, APM)) + geom_point(alpha = .1) + geom_smooth(method = 'loess', se = FALSE)
+ggplot(sc2, aes(TotalHours, APM)) + geom_point(alpha = .1) + geom_smooth(method = 'lm', formula = y ~ poly(x,2), se = FALSE)
+```
+
+```{r}
+
+```
+
