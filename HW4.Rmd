@@ -21,7 +21,13 @@ Write a DRAFT introduction. (It will likely change by the time you submit the fi
 > This project is an exploratory data analysis of a dataset originating from the computer game "Starcraft II" (henceforth referred to as "SC2" for short). SC2 belongs to the real-time strategy (RTS) genre, which typically involve players managing military bases and directly controlling armies in order to combat opposing players' armies and destroy their bases. All player actions happen in real-time. Thus, a successful player must be able to construct buildings, gather resources, and raise an army while simultaneously controlling available combat units to attack and defend. This dichotomy is referred to macromanagement and micromanagement, or "macro" and "micro" for short. A more detailed description of the game written by the researchers who compiled this dataset can be found [here](http://skillcraft.ca/about-the-project.html).
 
 
+![The Starcraft II interface through which players interact with their bases and armies](70-1.jpg)
+
+
 > The dataset used for this analysis originates from the research paper [Video Game Telemetry as a Critical Tool in the Study of Complex Skill Learning](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0075129#pone-0075129-g001) (Thompson et al, 2013) and can be found [here](http://summit.sfu.ca/item/13328). From August 12th, 2011 to September 19th, 2011, the researchers solicited members of various online SC2 community hubs for their game replay files, from which I found out about the study. The purpose of this study is to explore SC2 as a tool for measuring how people learn and improve skills. These replay files are an exact record of everything that happens during the course of a game, including various metrics related to the game state as well as the locations of every game unit at any given point in time (the video previously referenced was made using one such a replay file). These games were played on the 1 vs. 1 online ladder system, which places players in one of seven ladder ranks according to skill level. One's ladder rank is based on his or her win-loss record and the ranks of both players at the time of each game. When a player wishes to play, the system attempts to find an opponent with approximately the same skill level. 
+
+
+![Chaotic scenes such as this one are typical of almost every game of Starcraft II](starcraft2-protoss-terran.jpg)
 
 
 > What makes SC2 an interesting game to study is that the sheer complexity of the game in terms of all the things that could happen at any given moment compounded across an entire game means that every game is unique. The popularity of SC2 has led to a sustained professional scene, where players are sponsored by teams and compete in tournaments for cash prizes. These tournaments might be played online or offline, with players being flown into a studio or arena with a live audience. These events are accompanied by commentators who serve a similar role to those in traditional sports. In the past, the firt place prizes at the most prestigious tournaments have reached $100,000. This competitive scene has provided the game's passionate fanbase with a clear motivation for becoming better at the game while these professional players and their serve as role models for how to become better (A beginner's guide to competitive SC2 can be found [here](https://www.youtube.com/watch?v=JSPRgL4D1no)). As a passionate member of this community during the time that this dataset was compiled, I made a serious (but short-lived) effort at improving my SC2 skill level, from which I accumulated various advice and generally accepted wisdom on how one can get better at the game, as well as a deep appreciation for the talents of professional SC2 players. With this dataset, I would like to see if these community best practices are supported by the differentiaton of skill levels based on the ladder rank of the study participants. In their paper, the researchers discussed the next study that they were embarking on, which involved accepting large numbers of replay files from participants in order to assess changes in their skill over time. Though each data point in this dataset represents a single moment in time for one player, I want to explore how in-game metrics change across age groups and experience levels both within and across ranks. I plan on using variables in the dataset related to time to see if there are any general trends over time that can be discerned.
@@ -90,7 +96,7 @@ summary(sc$TotalHours)
 ```
 
 
-> What immediately stands out in the summary statistics is the maximum values for both variables. The maximum value for *HoursPerWeek* corresponds to 24 hours of playing time every week, while the maximum reported value of 1,000,000 for *TotalHours* far exceeds the number of hours that had elapsed since SC2 was released to the time that the data collection period concluded. When I discussed this matter with Professor Robbins, one of her suggestions was to "fence" the values such that outliers are replaced with a sensible ceiling value. From interviews of professional players as well as hearsay from those who are in touch with them, I chose 98 hours played per week as a ceiling value. This corresponds to 14 hours played per day, which is a habit that could most likely only be sustained by professional players signed to a major team. Such teams often operate a "team house" where all the players live and train together. It is not uncommon for the sponsors to hire maids to cook and clean so that the players can focus all their attention on playing SC2. In such cases, it is not unusual for players to devote 10-14 hours per day to practicing for upcoming important matches. As for the single data point with a value of 0 hours per week, I interpreted that as the respondent playing the game very infrequently. Because there was only one such data point and the fact that the next closest value is 2, I decided not to remove it. This variable appears roughly unimodal after adjusting the bandwidth of the density plot, with a mode of approximately 7 and a mean of 15.87. 
+> What immediately stands out in the summary statistics is the maximum values for both variables. The maximum value for *HoursPerWeek* corresponds to 24 hours of playing time every week, while the maximum reported value of 1,000,000 for *TotalHours* far exceeds the number of hours that had elapsed since SC2 was released to the time that the data collection period concluded. When I discussed this matter with Professor Robbins, one of her suggestions was to "fence" the values such that outliers are replaced with a sensible ceiling value. From interviews of professional players as well as hearsay from those who are in touch with them, I chose 98 hours played per week as a ceiling value. This corresponds to 14 hours played per day, which is a habit that could most likely only be sustained by professional players signed to a major team. Such teams often operate a "team house" where all the players live and train together. It is not uncommon for the sponsors to hire maids to cook and clean so that the players can focus all their attention on playing SC2. In such cases, it is not unusual for players to devote 10-14 hours per day to practicing for upcoming important matches. As for the single data point with a value of 0 hours per week, I interpreted that as the respondent playing the game very infrequently. Because there was only one such data point and the fact that the next closest value is 2, I decided not to remove it. 
 
 
 ```{r}
@@ -101,21 +107,67 @@ sc$HoursPerWeek <- ifelse(sc$HoursPerWeek > 98, 98, sc$HoursPerWeek)
 
 summary(sc$HoursPerWeek)
 
-ggplot(sc, aes(sc$HoursPerWeek)) + geom_density(bw = 2.5) + labs(x = 'Reported Hours Played Per Week') + scale_x_continuous(breaks = c(seq(0, 100, by = 5)))
+ggplot(sc, aes(sc$HoursPerWeek)) + geom_density(bw = 2.5) + labs(x = 'Reported Hours Played Per Week') + scale_x_continuous(breaks = c(seq(0, 100, by = 5))) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
 
 ```
 
+> This variable looks to be unimodal after adjusting the bandwidth of the density plot, with a mode of approximately 7 and a mean of 15.87. The mean value corresponds to around 2 hours per day of play, which sounds reasonable for that time period, which was when the game was still relatively new and the fanbase was at its largest. The distribution is right-skewed, which gives an idea of how much playing time per week would be considered typical. 
 
-> Similarly, I restricted the maximum value for *TotalHours* to 8,106. I arrived at this theoretical maximum by finding the number of days from the earliest date that a member of the general public could begin playing the game consistently, the start of the pre-release beta test period on February 17th, 2010, to the end of the data collection period, September 19th, 2011. Assuming an extremely dedicated fan played the theoretical maximum of 14 hours per day every day during that period, the played will have played the game for 8,106 hours.
+
+> Similarly, I restricted the maximum value for *TotalHours* to 8,106. I arrived at this theoretical maximum by finding the number of days from the earliest date that a member of the general public could begin playing the game consistently, the start of the pre-release beta test period on February 17th, 2010, to the end of the data collection period, September 19th, 2011. Assuming an extremely dedicated fan played the theoretical maximum of 14 hours per day every day during that period, the played will have played the game for 8,106 hours. 
 
 
 ```{r}
 
-sc$TotalHours <- ifelse(sc$TotalHours > 8106, 8106, sc$TotalHours)
+#Restrict "TotalHours" to a maximum value of 8106
 
-ggplot(sc, aes(sc$TotalHours)) + geom_histogram() + labs(x = 'Reported Total Number of Hours Played')
+sc$TotalHours <- ifelse(sc$TotalHours > 8106, 8106, sc$TotalHours)
+summary(sc$TotalHours)
+ggplot(sc, aes(sc$TotalHours)) + geom_histogram(binwidth = 200) + labs(x = 'Reported Total Number of Hours Played') + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
 
 ```
 
 
-> In the above histogram, several outlier values well below 8,106 hours can be seen. 
+> In the above histogram, several outlier values that are well below 8,106 hours and yet well above the median of 500 can be seen. Sustaining a 14 hour per day SC2 habit in addition to sleep time and any possible school and work responsibilities would be quite difficult. Even a professional player would have trouble remaining at that level of practice without burning out or experiencing wrist injuries. Therefore, I decided to further restrict this variable to a maximum value of 4,000 hours, which corresponds to approximately 7 hours a day. 
+
+
+```{r}
+
+#Further restrict "TotalHours" to a maximum value of 4000
+
+sc$TotalHours <- ifelse(sc$TotalHours > 4000, 4000, sc$TotalHours)
+summary(sc$TotalHours)
+
+ggplot() + geom_histogram(data = sc, aes(x = sc$TotalHours), binwidth = 200) + labs(x = 'Reported Total Number of Hours Played') + scale_x_continuous(breaks = c(seq(0, 4000, 250))) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
+
+ggplot() + geom_density(data = sc, aes(x = sc$TotalHours), bw = 75) + labs(x = 'Reported Total Number of Hours Played') + scale_x_continuous(breaks = c(seq(0, 4000, 250)))  + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
+
+```
+
+
+> The distribution for *TotalHours* looks to have a larger variance compared to that of *HoursPerWeek*. Both distributions are similarly right-skewed, which is to be expected since these two variables are most likely correlated. Depending on the parameter settings for the density plot and histogram, there might be evidence of bimodality, with an obvious mode of approximately 450 and another possible one of at approximately 700. The mean of 639.2 corresponds to approximately 1.5 hours of SC2 per day, which translates to around four standard 1 vs. 1 matches. 
+
+
+> Although age is only an indirect indicator of the passage of time, I want to search for trends across different age groups. In the professional Starcraft scene, it is commonly believed that one's skill declines with age, and that past the early to mid 20's, one's hand movements and reaction speeds begin to slow. This belief is reinforced by the fact that an overwhelming majority of tournament champions are relatively young, often still in their teens. While the researchers plan to investigate whether or not such a physiological decline actually occurs in their next study, I feel that it would be sensible to see if there's any supporting evidence for this belief using this dataset, even though it's not as experimentally valid studying a large quantity of replay files associated with individual players' experience with the game over a longer period of time.
+
+
+```{r}
+
+summary(sc$Age)
+
+ggplot(sc, aes(sc$Age)) + geom_histogram(binwidth = 1) + scale_x_continuous(breaks = c(seq(16,44, 2))) + labs(x = 'Age of the Participant') + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
+
+
+ggplot(sc, aes(sc$Age)) + geom_density(bw = .5) + labs(x = 'Age of the Participant') + scale_x_continuous(breaks = c(seq(0, 4000, 250)))  + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + scale_x_continuous(breaks = c(seq(16,44, 2)))
+
+```
+
+
+> A noticeable feature of this distribution is the abrupt cutoff point at 16. This is most likely due to ethical restrictions that the researchers adhered to with respect to allowing minors to participate in the study, rather than a lack of younger SC2 players. Otherwise, the age distribution almost looks normally distributed, with a mode of 21 and mean of 21.65. The distribution proceeds fairly smoothly to the maximum age of 44. Due to the smoothness of the distribution, I decided to not treat participants in their early 40's as outliers. The slope of the distribution significantly decreases past age 22, which lends support to the community's perceived notion of age and SC2.
+
+
+
+
+
+
+
