@@ -18,16 +18,19 @@ Write a DRAFT introduction. (It will likely change by the time you submit the fi
 ##Introduction
 
 
-> This project is an exploratory data analysis of a dataset originating from the computer game "Starcraft II" (henceforth referred to as "SC2" for short). SC2 belongs to the real-time strategy (RTS) genre, which typically involve players managing military bases and directly controlling armies in order to combat opposing players' armies and destroy their bases. All player actions happen in real-time. Thus, a successful player must be able to construct buildings, gather resources, and raise an army while simultaneously controlling available combat units to attack and defend. This dichotomy is referred to macromanagement and micromanagement, or "macro" and "micro" for short. A more detailed description of the game written by the researchers who compiled this dataset can be found [here](http://skillcraft.ca/about-the-project.html).
+> This project is an exploratory data analysis of a dataset originating from the computer game "Starcraft II" (henceforth referred to as "SC2" for short). SC2 belongs to the real-time strategy (RTS) genre, which typically involve players managing military bases and directly controlling armies in order to combat opposing players' armies and destroy their bases. In SC2, players control one of three factions, each with completely different playstyles and abilities. All player actions happen in real-time. Thus, a successful player must be able to construct buildings, gather resources, and raise an army while simultaneously controlling available combat units to attack and defend. This dichotomy is referred to macromanagement and micromanagement, or "macro" and "micro" for short. A more detailed description of the game written by the researchers who compiled this dataset can be found [here](http://skillcraft.ca/about-the-project.html).
 
 
-![The Starcraft II interface through which players interact with their bases and armies](70-1.jpg)
+![The Starcraft II interface through which players interact with their bases and armies](1.jpg)
 
 
-> The dataset used for this analysis originates from the research paper [Video Game Telemetry as a Critical Tool in the Study of Complex Skill Learning](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0075129#pone-0075129-g001) (Thompson et al, 2013) and can be found [here](http://summit.sfu.ca/item/13328). From August 12th, 2011 to September 19th, 2011, the researchers solicited members of various online SC2 community hubs for their game replay files, from which I found out about the study. The purpose of this study is to explore SC2 as a tool for measuring how people learn and improve skills. These replay files are an exact record of everything that happens during the course of a game, including various metrics related to the game state as well as the locations of every game unit at any given point in time (the video previously referenced was made using one such a replay file). These games were played on the 1 vs. 1 online ladder system, which places players in one of seven ladder ranks according to skill level. One's ladder rank is based on his or her win-loss record and the ranks of both players at the time of each game. When a player wishes to play, the system attempts to find an opponent with approximately the same skill level. 
+> The dataset used for this analysis originates from the research paper [Video Game Telemetry as a Critical Tool in the Study of Complex Skill Learning](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0075129#pone-0075129-g001) (Thompson et al, 2013) and can be found [here](http://summit.sfu.ca/item/13328). From August 12th, 2011 to September 19th, 2011, the researchers solicited members of various online SC2 community hubs for their game replay files, from which I found out about the study. Contributors were also asked to complete a survey that asked about their age, ladder rank, and playing habits. Data points with a LeagueIndex value of 8 indicate replay files of professional games that were shared with the public. These replays were subsequently submitted to the study by community members, which is why these replays all have missing values for self-reported variables.
 
 
-![Chaotic scenes such as this one are typical of almost every game of Starcraft II](starcraft2-protoss-terran.jpg)
+> The purpose of this study is to explore SC2 as a tool for measuring how people learn and improve skills. These replay files are an exact record of everything that happens during the course of a game, including various metrics related to the game state as well as the locations of every game unit at any given point in time (the video previously referenced was made using one such a replay file). These games were played on the 1 vs. 1 online ladder system, which places players in one of seven ladder ranks according to skill level. One's ladder rank is based on his or her win-loss record and the ranks of both players at the time of each game. When a player wishes to play, the system attempts to find an opponent with approximately the same skill level. 
+
+
+![Chaotic scenes such as this one are typical of almost every game of Starcraft II](2.jpg)
 
 
 > What makes SC2 an interesting game to study is that the sheer complexity of the game in terms of all the things that could happen at any given moment compounded across an entire game means that every game is unique. The popularity of SC2 has led to a sustained professional scene, where players are sponsored by teams and compete in tournaments for cash prizes. These tournaments might be played online or offline, with players being flown into a studio or arena with a live audience. These events are accompanied by commentators who serve a similar role to those in traditional sports. In the past, the firt place prizes at the most prestigious tournaments have reached $100,000. This competitive scene has provided the game's passionate fanbase with a clear motivation for becoming better at the game while these professional players and their serve as role models for how to become better (A beginner's guide to competitive SC2 can be found [here](https://www.youtube.com/watch?v=JSPRgL4D1no)). As a passionate member of this community during the time that this dataset was compiled, I made a serious (but short-lived) effort at improving my SC2 skill level, from which I accumulated various advice and generally accepted wisdom on how one can get better at the game, as well as a deep appreciation for the talents of professional SC2 players. With this dataset, I would like to see if these community best practices are supported by the differentiaton of skill levels based on the ladder rank of the study participants. In their paper, the researchers discussed the next study that they were embarking on, which involved accepting large numbers of replay files from participants in order to assess changes in their skill over time. Though each data point in this dataset represents a single moment in time for one player, I want to explore how in-game metrics change across age groups and experience levels both within and across ranks. I plan on using variables in the dataset related to time to see if there are any general trends over time that can be discerned.
@@ -44,14 +47,15 @@ Write a DRAFT description of the Team section.
 "List team members and a description of how each [WILL] contribute to the project."
 
 
-> Since I am working alone for this project, I am planning on exploring and analyzing this dataset in the following order:
+> Since I am working alone for this project, I am planning on exploring and analyzing this dataset with the following agenda:
 
 
 1. Check the self-reported variables for nonsensical/missing/outlier values and decide on a way to deal with them
-2. Propose an approximate order of in-game metric importance (in terms what the SC2 community deems essential for increasing skill level as opposed to what's "nice to have", similar to Maslow's heirarchy of needs)
-3. Explore these variables individually in the order proposed
-4. Visualize these variables together with variables related to time (player age, hours played per week, total hours played) to get an imprecise idea of how these metrics changes over time
-5. Create multivariate plots to find possible relationships between different metrics
+2. Analyze the three self-reported time variables not derived from the replay files, *TotalHours*, *HoursPerWeek*, and *Age*
+3. Propose an approximate order of in-game metric importance (in terms what the SC2 community deems essential for increasing skill level as opposed to what's "nice to have", similar to Maslow's heirarchy of needs)
+4. Explore these variables individually in the order proposed
+5. Visualize these variables together with the time variables to get an imprecise idea of how these metrics changes over time
+6. Create multivariate plots to find possible relationships between different metrics and across different league ranks
 
 
 #3) 
@@ -166,8 +170,52 @@ ggplot(sc, aes(sc$Age)) + geom_density(bw = .5) + labs(x = 'Age of the Participa
 > A noticeable feature of this distribution is the abrupt cutoff point at 16. This is most likely due to ethical restrictions that the researchers adhered to with respect to allowing minors to participate in the study, rather than a lack of younger SC2 players. Otherwise, the age distribution almost looks normally distributed, with a mode of 21 and mean of 21.65. The distribution proceeds fairly smoothly to the maximum age of 44. Due to the smoothness of the distribution, I decided to not treat participants in their early 40's as outliers. The slope of the distribution significantly decreases past age 22, which lends support to the community's perceived notion of age and SC2.
 
 
+> Proceeding to the in-game metrics, I feel that the most obvious one to explore is *APM*, short for Actions Per Minute. An action is defined to be any key press or mouse click performed by the player. In SC2, *APM* is almost synonymous with level skill. The common belief is that if a player can't perform actions faster than the opponent, then he or she simply can't keep up and will eventually be overwhelmed. The description accompanying this dataset does not specify whether the included *APM* values are averages over each game or maximum values. I assume that they represent average values since average APM is one of the metrics that the game presents to the player at the conclusion of each game.
 
 
+![Players must be able to click the right parts of the screen at the right time while reacting to what the opponent is doing.](3.jpg)
 
+
+![Several units either have activated abilities that must be triggered at the right time or targeted abilities that require the target to be clicked on precisely.](4.jpg)
+
+
+> During battles, a skilled player is able to position his army properly and micromanage several units simultaneusly without neglecting the more mundane tasks of producing workers and constructing buildings back at base. Winning a battle while forgetting to manage one's bases could leave one in a worse position and allow the opponent to catch up in the near future.
+
+
+```{r}
+summary(sc$APM)
+
+ggplot(sc, aes(sc$APM)) + geom_density(bw = 3) + labs(x = 'Actions Per Minute') + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + scale_x_continuous(breaks = c(seq(20,400, 20)))
+
+```
+
+
+> The distribution for *APM* looks to be approximately normally distributed, with a median of 108 and a mean of 117. The slope  on the left side is much steeper, with a minimum value of 20. This sounds reasonable, since 20 actions per minute can be achieved by nearly every able-bodied person using a computer without much effort. On the other end, we see some values exceeding 360, which translates to a sustained rate 6 actions per second. Though there have been a few professional players who were known for having high APM, it could also be the case that these players artificially inflated their APM by rapidly performing meaningless actions, such as clicking empty spaces. Often, players do this at the beginning of a game to warm up their hand muscles since there's typically not much to do at such an early stage of a game. A few years later, an improved APM measurement that filters out such meaningless actions was added to the game. Using that metric, we would be unlikely to see such extreme values.
+
+
+```{r}
+
+ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'purple') + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League Rank', y = 'APM')
+
+```
+
+
+> Plotting the distribution of APM based on league supports the idea these outlier *APM* values were artificially inflated. They originate from players in Diamond and Master League, which is far from the upper levels of competitive play. These outliers are far removed from the median values of their respective leagues. The fact that several values exceed even the median APM for professional players suggests that they are not realistically attainable values. 
+
+
+```{r}
+
+#Restrict APM values originating from Diamond and Master League to a maximum value of 275
+
+sc$APM <- ifelse(sc$APM > 275 & sc$League == 'Master' | sc$APM > 275 & sc$League == 'Diamond', 275, sc$APM)
+
+ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'purple') + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League Rank', y = 'APM')
+
+ggplot(sc, aes(sc$APM)) + geom_density(bw = 3) + labs(x = 'Actions Per Minute') + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + scale_x_continuous(breaks = c(seq(20,400, 20)))
+
+```
+
+
+> Having removed these outlier values, the shape of the density plot did not change much, but the boxplot looks more reasonable. The positive correlation between *League* and *APM* support the idea that APM is an indicator of skill level. 
 
 
