@@ -37,7 +37,7 @@ output:
 
 1. Check the self-reported variables for nonsensical/missing/outlier values and decide on a way to deal with them
 2. Analyze the three self-reported time variables not derived from the replay files, *TotalHours*, *HoursPerWeek*, and *Age*
-3. Propose an approximate order of in-game metric importance (in terms of which skills the SC2 community deems essential for increasing skill level as opposed to what's "nice to have", similar to Maslow's hierarchy of needs)
+3. Propose an approximate order of importance among the in-game metrics included in the dataset (in terms of which skills the SC2 community deems essential for increasing skill level as opposed to what's "nice to have", similar to Maslow's hierarchy of needs)
 4. Explore these variables individually in the order proposed
 5. Visualize these variables together with the time variables to get an imprecise idea of how these metrics changes over time
 6. Create multivariate plots to find possible relationships between different metrics across different leagues and experience levels
@@ -81,6 +81,9 @@ rank <- factor(rank, levels = c('Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond
 sc <- mutate(sc, League = rank[LeagueIndex])
 
 ```
+
+
+###*HoursPerWeek* and *TotalHours*
 
 
 >  Since my analysis will partly be focused on the change in player metrics as a function of time, it would be appropriate to start with the two time variables, *HoursPerWeek* and *"*TotalHours*"*. These variables are prone to reporting inaccuracy due to the fact that participants are attempting to generalize several months of playing experience and habits into two numbers. By removing outlier values and drawing scatterplots, it is also obvious that the reported values for both variables have been rounded. For *TotalHours*, the rounding looks to have been done by the respondents since there are data points scattered between rounded values. For *HoursPerWeek*, I assume that respondents could only choose from certain  values preselected by the researchers rather than typing their answer manually.
@@ -186,6 +189,9 @@ ggplot() + geom_density(data = sc_remove, aes(x = sc_remove$TotalHours), bw = 75
 > By removing the outlier values, the tail small bump at 4,000 hours is noticeably reduced. The distribution for *TotalHours* looks to have a larger variance compared to that of *HoursPerWeek*. Both distributions are similarly right-skewed, which is to be expected since these two variables are most certainly correlated. Depending on the parameter settings for the density plot and histogram, there might be evidence of bimodality, with a distinct mode of approximately 450 and another possible one of at approximately 700. The mean of 639.2 corresponds to approximately 1.5 hours of SC2 per day, which translates to around four average length 1 vs. 1 matches. 
 
 
+###*Age*
+
+
 > Although age is only an indirect indicator of the passage of time, I want to search for trends across different age groups. In the Starcraft community, it is commonly believed that one's skill declines with age, such that past the early to mid 20's, hand movement and reaction speeds begin to slow down. This belief is reinforced by the fact that an overwhelming majority of tournament champions are relatively young, often still in their teens. While the researchers plan to investigate whether or not such a physiological decline actually occurs in their next study, I feel that it would be sensible to see if there's any supporting evidence for this belief using this dataset, even though it's not as scientifically valid as analyzing a large quantity of replay files associated with individual players' experiences with the game over a long period of time.
 
 
@@ -208,6 +214,9 @@ ggplot(sc, aes(sc$Age)) + geom_density(bw = .5, fill = 'purple', alpha = .5) + l
 > A noticeable feature of this distribution is the abrupt cutoff point at 16. This is most likely due to ethical restrictions that the researchers adhered to with respect to allowing minors to participate in the study, rather than a lack of younger SC2 players. Were it not for this, the age distribution would look almost normally distributed, with a mode of 21 and mean of 21.65. The distribution proceeds fairly smoothly to the maximum age of 44. Due to the smoothness of the distribution, I decided to not treat participants in their early 40's as outliers. The slope of the distribution significantly decreases past age 22, which lends support to the community's perceived notions concerning age and skill level.
 
 
+###*APM* (Actions per Minute)
+
+
 ![Players must be able to click on the right parts of the screen at the right time while reacting to what the opponent is doing.](3.jpg)
 
 
@@ -223,7 +232,7 @@ ggplot(sc, aes(sc$Age)) + geom_density(bw = .5, fill = 'purple', alpha = .5) + l
 > During battles, a skilled player should be able to position his army properly and micromanage several units simultaneously without neglecting the more mundane tasks of producing workers and constructing buildings back at base. Winning a battle while forgetting to manage one's bases could leave one in a worse position and allow the opponent to catch up in the near future.
 
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 summary(sc$APM)
 
 ggplot(sc, aes(sc$APM)) + geom_density(bw = 3, fill = 'purple', alpha = .5) + labs(x = 'Actions Per Minute') + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + scale_x_continuous(breaks = c(seq(20,400, 20)))
@@ -234,7 +243,7 @@ ggplot(sc, aes(sc$APM)) + geom_density(bw = 3, fill = 'purple', alpha = .5) + la
 > The distribution for *APM* looks to be approximately normally distributed, with a median of 108 and a mean of 117. The slope  on the left side is much steeper, with a minimum value of 20. This sounds reasonable, since 20 actions per minute can be achieved by nearly any able-bodied person using a computer without much effort. On the other end, we see some values exceeding 360, which translates to a sustained rate of 6 actions per second. Though there have been a few professional players who were known for consistently attaining such exceptionally high APM values, it could also be the case that the *APM* outlier values in this dataset are due to some players inflating their APM by rapidly performing meaningless actions, such as clicking empty spaces. Often, players do this at the beginning of a game to warm up their hand muscles since there's typically not much to do at such an early stage of a game. However, it could be the case that some players continue doing this throughout their games, possibly with the intention of inflating their APM rate. A few years after these replays were collected, an improved APM measurement that filters out such meaningless actions was added to the game. Using that metric, we would be unlikely to see such extreme values.
 
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 
 ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'APM') + scale_y_continuous(breaks = c(seq(0, 400, 25)))
 
@@ -244,7 +253,7 @@ ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill =
 > Plotting the distribution of APM versus league rank supports the idea these outlier *APM* values were artificially inflated. They originate from players in Diamond and Master League, which is far from the highest levels of competitive play. These outliers are far removed from the median values of their respective leagues. The fact that several values exceed even the highest APM for GrandMaster players suggests that they are not realistically attainable values for players in these leagues. Therefore, I decided to remove data points where *APM* values exceed 275, which is the approximate median value for the professional players represented in this dataset.
 
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 
 #Remve data points belonging to Diamond and Master League that have over 275 APM
 
@@ -263,7 +272,6 @@ ggplot(sc, aes(sc$APM)) + geom_density(bw = 3, fill = 'purple', alpha = .5) + la
 > Having removed these outlier values, the shape of the density plot did not change much, but the boxplot looks more reasonable. There is a positive correlation between *League* and *APM* that supports the idea that APM is a reasonable indicator of skill level. However, it should be noted that player actions can rarely be accurately categorized as either "meaningful" or "meaningless". There are often several events happening simultaneously across the battlefield that demand a player's attention. SC2 expertise heavily depends on the ability to prioritize these events and focus attention on the most important ones. To give two extreme examples, a player who devote full attention to only controlling a single unit at a time will most likely not win too many games, much like a player who instantly shifts his or her attention to the latest event without any prioritization. Even with "meaningful" actions, the decisions that a player makes can be judged on a continuous scale of effectiveness that depends on the context of what is happening and what the player knows at that moment. In broadcasted games, commentators are expected to analyze these decisions and point out which ones they think are wise or unwise. Thus, one cannot declare that one player is definitely better than another player based solely on a comparison of APM.
 
 
-
 ##4. Executive Summary
 
 
@@ -275,27 +283,72 @@ ggplot(sc, aes(sc$APM)) + geom_density(bw = 3, fill = 'purple', alpha = .5) + la
 
 
 1. *WorkersMade*
-2. *UniqueHotkeys*
-3. *MinimapAttacks*
-4. *AssignToHotkeys* / *SelectByHotkeys*
-5. *TotalMapExplored*
-6. *UniqueUnitsMade*
-7. *ComplexAbilitiesUsed* / *ComplexUnitsMade*
+2. *MinimapAttacks*
+3. *AssignToHotkeys* / *SelectByHotkeys*
+4. *TotalMapExplored*
+5. *UniqueUnitsMade*
+6. *ComplexAbilitiesUsed* / *ComplexUnitsMade*
+7. *UniqueHotkeys*
+
+
+> It should be noted that these variables are rates expressed in "timestamps", which is the way that the game calculates time. There are approximately 88.5 timestamps per second according to the dataset documentation. Since such a short measure of time creates very small values, I will express these variables in either seconds or minutes to avoid dealing with long numbers and to facilitate understanding.
+
+
+###*WorkersMade*
 
 
 > The typical answer to the question of how one gets better at SC2 is to make more workers. This might seem surprisingly at first. Worker units are meant to collect resources, construct buildings, and sometimes to serve as sacrificial pawns during attacks or defenses. However, collecting enough resources is of utmost importance, since this is the currency with which players build their army and bases. People often tell novices that they can get promoted out of Bronze League with this simple strategy: make lots of workers, collect lots of resources, build an army with those resources, and send that army straighht to the enemy base.
 
 
-> The density plot below shows that the mean is around 4 workers produced per minute. 
+> The violin plot below shows that there is a slightly positive correlation between how workers are produced per minute and the rank of the player. By looking at the median lines, one can see a slight downward trend going from Master to GrandMaster. A more pronounced increase can be seen when looking at the outlier values from Diamond to GrandMaster. This demonstrates that one should find the proper balance between making too few workers (collecting resources at a suboptimal rate) and making too many (wasting money by producing unneeded workers who have nothing to do). On the other end, the transition from Bronze to Silver results in the median increasing from 2.934 to 3.84, which is more than the transition between any other pairs of adjacent leagues. This supports the claim that players can be promoted out of Bronze League simply by focusing on improving their worker production habits. Meanwhile, the outlier values in Diamond league could be a sign of players producing more workers than needed, which would be an inefficient use of resources.
+
+
+```{r warning=FALSE, message=FALSE}
+
+ggplot(sc, aes(sc$League, sc$WorkersMade*88.5*60)) + geom_violin(fill = 'purple', alpha = 0.5, draw_quantiles = c(0.5)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Workers Produced per Minute') + scale_y_continuous(breaks = c(seq(0,30, 2)))
+
+#Display summary statistics for "WorkersMade" for each league
+
+for(league in unique(sc$League)) {
+  print(league)
+  print(summary(filter(sc, sc$League == league)$WorkersMade*88.5*60))
+}
+
+```
+
+
+###*MinimapAttacks*
+
+
+
+
+###*AssignToHotkeys* and *SelectByHotkeys*
+
+
+> It could be argued that learning to use hotkeys is equally essential for improving at SC2. Hotkeys are the computer game equivalent of keyboard shortcuts, and by not using them, one would be reduced to playing the game with only a mouse. To give an idea of how inefficient and time-consuming that would be, imagine having to type by using a mouse to click each letter on a virutal keyboard at the bottom of the computer screen. This analogy is not far from the truth since most of the buttons corresponding to actions in the game are located at the bottom of the screen. 
+
+
+###*UniqueHotkeys*
+
+
+
 
 
 ```{r}
 
-ggplot(sc, aes(sc$WorkersMade*88.5*60)) + geom_density(fill = 'purple', alpha = .5) + labs(x = 'Workers Produced per Minute') + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + scale_x_continuous(breaks = c(seq(0,30, 2)))
+ggplot(sc, aes(sc$League, sc$UniqueHotkeys*88.5*60*10)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Unique Hotkeys Used per Minute') 
 
-ggplot(sc, aes(sc$League, sc$WorkersMade*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Workers Produced per Minute') + scale_y_continuous(breaks = c(seq(0,30, 2)))
+#Display summary statistics for "UniqueHotkeys" for each league
+
+for(league in unique(sc$League)) {
+  print(league)
+  print(summary(filter(sc, sc$League == league)$UniqueHotkeys*88.5*60))
+}
 
 ```
+
+
+> 
 
 
 ##6. Conclusion
