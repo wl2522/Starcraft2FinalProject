@@ -48,20 +48,13 @@ output:
 ##3. Analysis of Data Quality
 
 
-> The dataset used for this analysis originates from the research paper [Video Game Telemetry as a Critical Tool in the Study of Complex Skill Learning](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0075129#pone-0075129-g001) (Thompson et al, 2013) and can be found [here](http://summit.sfu.ca/item/13328). From August 12th, 2011 to September 19th, 2011, the researchers solicited members of various online SC2 community hubs for their game replay files, from which I found out about this study. Contributors were also asked to complete a survey that asked about their age, skill level, and playing habits.
+> The dataset used for this analysis originates from the research paper [Video Game Telemetry as a Critical Tool in the Study of Complex Skill Learning](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0075129#pone-0075129-g001) (Thompson et al, 2013) and can be found [here](http://summit.sfu.ca/item/13328). From August 12th, 2011 to September 19th, 2011, the researchers solicited members of various online SC2 community hubs for their game replay files, from which I found out about this study. Contributors were also asked to complete a survey that asked about their age, skill level, and playing habits. Since each replay file only contains information about what happens during the course of the one game that the file originated from, it is unable to provide players' personal details such as age or how long they've been playing the game. Additionally, a player's league isn't included since that information doesn't directly affect the game once the matchmaking system is done finding an opponent. The league names, in order of increasing skill, are Bronze, Silver, Gold, Platinum, Diamond, Masters, and Grandmasters. Data points with a *LeagueIndex* value of 8 indicate replay files of professional games that were shared with the public. These replays were subsequently submitted to the study by community members, which is why these replays all have missing values for self-reported variables.
 
 
-> Players were asked to provide their League at the time of the survey since this player information isn't contained in replay files. The league names, in order of increasing skill, are Bronze, Silver, Gold, Platinum, Diamond, Masters, and Grandmasters. Data points with a *LeagueIndex* value of 8 indicate replay files of professional games that were shared with the public. These replays were subsequently submitted to the study by community members, which is why these replays all have missing values for self-reported variables.
+> It should be noted that "professional" simply means that those replays are of games that were played by professional players in tournaments. There is no "professional" league in the ladder system. Also, the Grandmasters League is limited to the top 200 players. It is necessary for a player to be successful in the Grandmasters League in order to play SC2 professionally, so there is a chance that professional players can be represented in both leagues in this dataset. However, this is unlikely due to their tendency to hide their identities when playing online as much as possible. This is so that their rivals don't get opportunities to study them. Therefore, it is highly unlikely that a professional player participated in this survey and willingly submitted his own replays of Grandmasters League games played online to this dataset.
 
 
-##4. Executive Summary
-
-
-
-##5. Main Analysis
-
-
-> My analysis begins with loading the csv file containing the dataset and converting integer variables that were imported as factors. I then create a new variable called *rank* that adds the proper name for each player's league based on the *LeagueIndex* variable.
+> My analysis begins with loading the csv file containing the dataset and converting integer variables that were imported as factors. I then create a new variable called *rank* that adds the proper name for each player's league based on the *LeagueIndex* variable. While the variables derived from the replay files are inherently accurate, the variables derived from survey answers should be checked for inaccuracies and irregularities. 
 
 
 ```{r warning=FALSE, message=FALSE}
@@ -86,7 +79,7 @@ sc <- mutate(sc, League = rank[LeagueIndex])
 ```
 
 
-> Since my analysis will partly be focused on the change in player metrics as a function of time, it would be appropriate to start with the two time variables, *HoursPerWeek* and *"*TotalHours*"*. Like other variables that are outside the scope of any single game, they contain self-reported values based on a survey that participants filled out when submitting their replay files. Thus, they are prone to reporting inaccuracy due to the fact that participants are attempting to generalize several months of playing experience and habits into two numbers. 
+>  Since my analysis will partly be focused on the change in player metrics as a function of time, it would be appropriate to start with the two time variables, *HoursPerWeek* and *"*TotalHours*"*. These variables are prone to reporting inaccuracy due to the fact that participants are attempting to generalize several months of playing experience and habits into two numbers. 
 
 
 ```{r}
@@ -97,56 +90,100 @@ summary(sc$TotalHours)
 ```
 
 
-> What immediately stands out in the summary statistics is the maximum values for both variables. The maximum value for *HoursPerWeek* corresponds to 24 hours per day of playing time every week, while the maximum reported value of 1,000,000 for *TotalHours* far exceeds the number of hours that had elapsed since SC2 was released to the time that the data collection period concluded. When I discussed this matter with Professor Robbins, one of her suggestions was to "fence" the values such that outliers are replaced with a sensible ceiling value. From interviews of professional players as well as hearsay from those who keep in contact with them, I chose 98 hours played per week as a ceiling value. This corresponds to 14 hours played per day, which is a habit that could most likely only be sustained by professional players signed to a major team. Such teams often operate a "team house" where all the players live and train together. It is not uncommon for the sponsors to hire maids to cook and clean so that the players can focus all their attention on playing SC2. In such cases, it is not unusual for players to devote 10-14 hours per day to practicing for upcoming important matches. As for the single data point with a value of 0 hours per week, I interpreted that as the respondent playing the game very infrequently. Because there was only one such data point and the fact that the next closest value is 2, I decided not to remove it. 
+> What immediately stands out in the summary statistics is the maximum values for both variables. The maximum value for *HoursPerWeek* corresponds to 24 hours per day of playing time every week, while the maximum reported value of 1,000,000 for *TotalHours* far exceeds the number of hours that had elapsed since SC2 was released to the time that the data collection period concluded. When I discussed this matter with Professor Robbins, one of her suggestions was to "fence" the values such that outliers are replaced with a sensible ceiling value. From interviews of professional players as well as hearsay from those who keep in contact with them, I chose 98 hours played per week as a ceiling value. This corresponds to 14 hours played per day, which is a habit that could most likely only be sustained by professional players signed to a major team. Such teams often operate a "team house" where all the players live and train together. It is not uncommon for the sponsors to hire maids to cook and clean so that the players can focus all their attention on playing SC2. In such cases, it is not unusual for players to devote 10-14 hours per day to practicing for upcoming important matches.
+
+
+> Another suggestion was to simply remove these outliers from the dataset, since the respondents might not have given a serious answer to the question. When both methods are compared side by side below, there doesn't seem to be any appreciable difference due to the small number of outliers (56 out of 3,339). As for the single data point with a value of 0 hours per week, I interpreted that as the respondent playing the game very infrequently. Because there was only one such data point and the fact that the next closest value is 2, I decided not to remove it. 
 
 
 ```{r warning=FALSE, message=FALSE}
 
 #Restrict "HoursPerWeek" to a maximum value of 98
 
-sc$HoursPerWeek <- ifelse(sc$HoursPerWeek > 98, 98, sc$HoursPerWeek)
+sc_restrict <- sc
+sc_restrict$HoursPerWeek <- ifelse(sc_restrict$HoursPerWeek > 98, 98, sc_restrict$HoursPerWeek)
 
-summary(sc$HoursPerWeek)
+ggplot(sc_restrict, aes(sc_restrict$HoursPerWeek)) + geom_density(bw = 2.5, fill = 'purple', alpha = .5) + labs(x = 'Reported Hours Played Per Week', title = 'HoursPerWeek Outliers Fenced') + scale_x_continuous(breaks = c(seq(0, 100, by = 5))) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
 
-ggplot(sc, aes(sc$HoursPerWeek)) + geom_density(bw = 2.5, fill = 'purple', alpha = .5) + labs(x = 'Reported Hours Played Per Week') + scale_x_continuous(breaks = c(seq(0, 100, by = 5))) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
+#Remove data with "HoursPerWeek" values greater than 98
+
+sc_remove <- sc
+sc_remove <- filter(sc, HoursPerWeek <= 98)
+
+summary(sc_restrict$HoursPerWeek)
+summary(sc_remove$HoursPerWeek)
+
+ggplot(sc_remove, aes(sc_remove$HoursPerWeek)) + geom_density(bw = 2.5, fill = 'purple', alpha = .5) + labs(x = 'Reported Hours Played Per Week', title = 'HoursPerWeek Outliers Removed') + scale_x_continuous(breaks = c(seq(0, 100, by = 5))) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
 
 ```
+
 
 > This variable looks to be unimodal after adjusting the bandwidth of the density plot, with a mode of approximately 7 and a mean of 15.87. The mean value corresponds to around 2 hours per day of play, which sounds reasonable for that time period, during which the game was still relatively new and the fanbase was at its largest. The distribution is right-skewed, which gives an idea of how many 'typical' players there are compared to the more dedicated ones 
 
 
-> Similarly, I restricted the maximum value for *TotalHours* to 8,106. I arrived at this theoretical maximum by counting the number of days from the earliest date that a member of the general public could begin playing the game consistently (the pre-release beta test period began on February 17th, 2010) to the end of the data collection period, September 19th, 2011. Assuming that an extremely dedicated fan played the theoretical maximum of 14 hours per day every day during that period, he or she will have played the game for a total of 8,106 hours. 
+> Similarly, I tried both restricting the maximum value for *TotalHours* to 8,106 and removing data points that exceed that value. I arrived at this theoretical maximum by counting the number of days from the earliest date that a member of the general public could begin playing the game consistently (the pre-release beta test period began on February 17th, 2010) to the end of the data collection period, September 19th, 2011. Assuming that an extremely dedicated fan played the theoretical maximum of 14 hours per day every day during that period, he or she will have played the game for a total of 8,106 hours. 
 
 
 ```{r warning=FALSE, message=FALSE}
 
-#Restrict "TotalHours" to a maximum value of 8106
+#Restrict "TotalHours" to a maximum value of 8,106
 
-sc$TotalHours <- ifelse(sc$TotalHours > 8106, 8106, sc$TotalHours)
-summary(sc$TotalHours)
-ggplot(sc, aes(sc$TotalHours)) + geom_histogram(binwidth = 200, fill = 'purple', alpha = .5) + labs(x = 'Reported Total Number of Hours Played') + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
+sc_restrict$TotalHours <- ifelse(sc_restrict$TotalHours > 8106, 8106, sc_restrict$TotalHours)
+summary(sc_restrict$TotalHours)
+
+ggplot(sc_restrict, aes(sc_restrict$TotalHours)) + geom_histogram(binwidth = 200, fill = 'purple', alpha = .5) + labs(x = 'Reported Total Number of Hours Played', title = 'TotalHours Outliers Restricted') + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
+
+#Remove data with "TotalHours" values greater than 8,106
+
+sc_remove <- filter(sc_remove, TotalHours <= 8106)
+summary(sc_remove$TotalHours)
+
+
+ggplot(sc_remove, aes(sc_remove$TotalHours)) + geom_histogram(binwidth = 200, fill = 'purple', alpha = .5) + labs(x = 'Reported Total Number of Hours Played', title = 'TotalHours Outliers Removed') + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
 
 ```
 
 
-> In the above histogram, several outlier values that are well below 8,106 hours and yet well above the median of 500 can be seen. Sustaining a 14 hour per day SC2 habit in addition to sleep time and any possible school and work responsibilities would be quite difficult. Even a professional player would have trouble keeping up with that level of practice for an extended period of time without feeling mental exhaustion or experiencing wrist injuries. Therefore, I decided to further restrict this variable to a maximum value of 4,000 hours, which corresponds to approximately 7 hours per day. 
+> Again, both methods for dealing with outliers yield almost identical distributions. In the above histograms, several outlier values that are well below 8,106 hours and yet well above the median of 500 can be seen. Sustaining a 14 hour per day SC2 habit in addition to sleep time and any possible school and work responsibilities would be quite difficult. Even a professional player would have trouble keeping up with that level of practice for an extended period of time without feeling mental exhaustion or experiencing wrist injuries. Therefore, I decided to further restrict this variable to a maximum value of 4,000 hours, which corresponds to approximately 7 hours per day. 
 
 
 ```{r warning=FALSE, message=FALSE}
 
-#Further restrict "TotalHours" to a maximum value of 4000
+#Further restrict "TotalHours" to a maximum value of 4,000
 
-sc$TotalHours <- ifelse(sc$TotalHours > 4000, 4000, sc$TotalHours)
-summary(sc$TotalHours)
+sc_restrict$TotalHours <- ifelse(sc_restrict$TotalHours > 4000, 4000, sc_restrict$TotalHours)
+summary(sc_restrict$TotalHours)
 
-ggplot() + geom_histogram(data = sc, aes(x = sc$TotalHours), binwidth = 200, fill = 'purple', alpha = .5) + labs(x = 'Reported Total Number of Hours Played') + scale_x_continuous(breaks = c(seq(0, 4000, 250))) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
+ggplot() + geom_histogram(data = sc_restrict, aes(x = sc_restrict$TotalHours), binwidth = 200, fill = 'purple', alpha = .5) + labs(x = 'Reported Total Number of Hours Played', title = 'TotalHours Outliers Restricted') + scale_x_continuous(breaks = c(seq(0, 4000, 250))) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
 
-ggplot() + geom_density(data = sc, aes(x = sc$TotalHours), bw = 75, fill = 'purple', alpha = .5) + labs(x = 'Reported Total Number of Hours Played') + scale_x_continuous(breaks = c(seq(0, 4000, 250)))  + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
+ggplot() + geom_density(data = sc_restrict, aes(x = sc_restrict$TotalHours), bw = 75, fill = 'purple', alpha = .5) + labs(x = 'Reported Total Number of Hours Played', title = 'TotalHours Outliers Restricted') + scale_x_continuous(breaks = c(seq(0, 4000, 250)))  + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
+
+#Further remove data with "TotalHours" values greater than 4,000
+
+
+sc_remove <- filter(sc_remove, TotalHours <= 4000)
+summary(sc_remove$TotalHours)
+
+ggplot() + geom_histogram(data = sc_remove, aes(x = sc_remove$TotalHours), binwidth = 200, fill = 'purple', alpha = .5) + labs(x = 'Reported Total Number of Hours Played', title = 'TotalHours Outliers Removed') + scale_x_continuous(breaks = c(seq(0, 4000, 250))) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
+
+ggplot() + geom_density(data = sc_remove, aes(x = sc_remove$TotalHours), bw = 75, fill = 'purple', alpha = .5) + labs(x = 'Reported Total Number of Hours Played', title = 'TotalHours Outliers Removed') + scale_x_continuous(breaks = c(seq(0, 4000, 250)))  + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
 
 ```
 
 
 > The distribution for *TotalHours* looks to have a larger variance compared to that of *HoursPerWeek*. Both distributions are similarly right-skewed, which is to be expected since these two variables are most certainly correlated. Depending on the parameter settings for the density plot and histogram, there might be evidence of bimodality, with a distinct mode of approximately 450 and another possible one of at approximately 700. The mean of 639.2 corresponds to approximately 1.5 hours of SC2 per day, which translates to around four average length 1 vs. 1 matches. 
+
+
+##4. Executive Summary
+
+
+
+##5. Main Analysis
+
+
+
+
+
 
 
 > Although age is only an indirect indicator of the passage of time, I want to search for trends across different age groups. In the Starcraft community, it is commonly believed that one's skill declines with age, such that past the early to mid 20's, hand movement and reaction speeds begin to slow down. This belief is reinforced by the fact that an overwhelming majority of tournament champions are relatively young, often still in their teens. While the researchers plan to investigate whether or not such a physiological decline actually occurs in their next study, I feel that it would be sensible to see if there's any supporting evidence for this belief using this dataset, even though it's not as scientifically valid as analyzing a large quantity of replay files associated with individual players' experiences with the game over a long period of time.
