@@ -1,8 +1,8 @@
 ---
 title: "Examining Changes in Player Skill and Experience in Starcraft II"
 output:
-  html_document: default
   html_notebook: default
+  html_document: default
 ---
 
 
@@ -74,7 +74,7 @@ sc$TotalHours <- as.integer(as.character(sc$TotalHours))
 sc$HoursPerWeek <- as.integer(as.character(sc$HoursPerWeek))
 sc$Age <- as.integer(as.character(sc$Age))
 
-#Add a new variable 'rank' so that the values in the included "LeagueIndex" variable are associated with the names of each league
+#Add a new variable "League" so that the values in the included "LeagueIndex" variable are associated with the names of each league
 
 rank <- c('Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Master', 'GrandMaster')
 rank <- factor(rank, levels = c('Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Master', 'GrandMaster'))
@@ -309,7 +309,7 @@ ggplot(sc, aes(sc$League, sc$WorkersMade*88.5*60)) + geom_violin(fill = 'purple'
 
 #Display summary statistics for "WorkersMade" for each league
 
-for(league in unique(sc$League)) {
+for(league in rank) {
   print(league)
   print(summary(filter(sc, sc$League == league)$WorkersMade*88.5*60))
 }
@@ -320,12 +320,45 @@ for(league in unique(sc$League)) {
 ###*MinimapAttacks*
 
 
+> The second most important metric might be a surprising choice as well. The minimap is a miniature map of the battlefield located on the bottom lefthand corner of the user interface (as shown in the first gameplay screenshot in the introduction section). At a glance, players can see what is happening wherever he has an army presence. By clicking on the minimap, players can instantly switch views to the corresponding location. More importantly, he orshe can order units to move to or attack that location. With the minimap, players can react to situations occurring in the game faster and more efficiently. This difference can be compared to the difference between editing a long document with ability to jump to different sections by clicking or scrolling with a mouse versus having to manually scroll through the text using the arrow keys on the keyboard.
+
+
+```{r}
+
+ggplot(sc, aes(sc$League, sc$MinimapAttacks)) + geom_boxplot(fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Minimap Attacks Issued per Minute')
+
+
+```
+
+
+> There are a few outlier data points (5/3395) that are obscuring the view of the league distributions. After removing those points, the distribution can be more clearly seen:
+
+
+```{r}
+
+#Remove the "MinimapAttacks" outlier values and convert the values in terms of minutes
+
+sc <- filter(sc, sc$MinimapAttacks < 0.0013)
+
+ggplot(sc, aes(sc$League, sc$MinimapAttacks*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Minimap Attacks Issued per Minute')
+
+for(league in rank) {
+  print(league)
+  print(summary(filter(sc, sc$League == league)$MinimapAttacks*88.5*60))
+}
+
+```
+
+
+> In this case, there's a positive correlation that appears to increase with the leagues. The increase in the median between Master and GrandMaster (0.4867 to 1.277) shows the importance of using the minimap to attain the highest level of skill. On the other end, the median also changes significantly from Bronze to Silver (o to 0.07434), which supports the belief that at least some minimap usage can be enough to be promoted out of Bronze League.
 
 
 ###*AssignToHotkeys* and *SelectByHotkeys*
 
 
-> It could be argued that learning to use hotkeys is equally essential for improving at SC2. Hotkeys are the computer game equivalent of keyboard shortcuts, and by not using them, one would be reduced to playing the game with only a mouse. To give an idea of how inefficient and time-consuming that would be, imagine having to type by using a mouse to click each letter on a virutal keyboard at the bottom of the computer screen. This analogy is not far from the truth since most of the buttons corresponding to actions in the game are located at the bottom of the screen. 
+> It could be argued that learning to use hotkeys is equally essential to improving at SC2. Hotkeys are the computer game equivalent of keyboard shortcuts, and by not using them, one would be reduced to playing the game with only a mouse. To give an idea of how inefficient and time-consuming that would be, imagine having to type by using a mouse to click each letter on a virutal keyboard at the bottom of the computer screen. This analogy is not far from the truth since most of the buttons corresponding to actions in the game are located at the bottom of the user interface.
+
+> Each possible command in the game has an associated default hotkey. In addition, players can assign specific groups of units and buildings to one of the number keys. Therefore, by pressing a number key, a player can immediately select several units, no matter where they are on the map or how far apart they are.
 
 
 ###*UniqueHotkeys*
@@ -340,7 +373,7 @@ ggplot(sc, aes(sc$League, sc$UniqueHotkeys*88.5*60*10)) + geom_boxplot(outlier.c
 
 #Display summary statistics for "UniqueHotkeys" for each league
 
-for(league in unique(sc$League)) {
+for(league in rank) {
   print(league)
   print(summary(filter(sc, sc$League == league)$UniqueHotkeys*88.5*60))
 }
