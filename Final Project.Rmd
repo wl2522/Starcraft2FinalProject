@@ -1,8 +1,8 @@
 ---
 title: "Examining Changes in Player Skill and Experience in Starcraft II"
 output:
-  html_document: default
   html_notebook: default
+  html_document: default
 ---
 
 
@@ -12,19 +12,16 @@ output:
 > This project is an exploratory data analysis of a dataset originating from the computer game "Starcraft II" (henceforth referred to as "SC2" for short). SC2 belongs to the real-time strategy (RTS) genre, which typically involve players managing military bases and directly controlling armies in order to combat opposing players' armies and destroy their bases. In SC2, players control one of three factions, each with completely different playstyles and abilities. All player actions happen in real-time. Thus, a successful player must be able to construct buildings, gather resources, and raise an army while simultaneously controlling existing combat units. This dichotomy is referred to macromanagement and micromanagement, or "macro" and "micro" for short. In addition, each player's view of the battlefield is limited by the "fog of war", a term that means that each player can only see in locations where his units and buildings are present. Otherwise, that part of the map is obscured. Thus, a successful player must be able to construct buildings, gather resources, and raise an army while simultaneously controlling existing combat units and maintaining awareness of what the enemy is doing on the battlefield. A more detailed description of the game written by the researchers who compiled this dataset can be found [here](http://skillcraft.ca/about-the-project.html).
 
 
-![The Starcraft II interface through which players interact with their bases and armies](1.jpg)
-
-
 > The purpose of this study is to investigate SC2 as a tool for measuring how people learn and acquire expertise. These replay files are a complete record of everything that happens during the course of a game, including various metrics related to the game state, what each player is looking at, and where every game unit is located at any given point in time. These games were played on the 1 vs. 1 online ladder system, which places players in one of seven "leagues" according to a "ladder rank" calculated by a matchmaking algorithm. One's ladder rank is based on his or her win-loss record and the ladder rank of the opponent in each game. When a player wishes to play, the system attempts to find an opponent with a similar ladder rank. Once a player becomes skilled enough to consistently defeat opponents within the same league, the matchmaking system will begin matching the player against opponents of the next highest league. If the player wins enough of these games, then he or she will be promoted to that league. Similarly, if a player is consistently losing against opponents within the same league, the matchmaking system will begin matching the player against opponents in the next lowest league. If the player loses enough of these matches, then he or she will be demoted to that league.
 
 
-![Chaotic scenes such as this one are typical of almost every game of Starcraft II](2.jpg)
+![Chaotic scenes such as this one are typical of almost every game of Starcraft II](intro.jpg)
 
 
-> What makes SC2 an interesting game to study is the fact that the sheer complexity of the game in terms of all the things that could happen at any given moment compounded across an entire game means that every game is unique. Each game can unfold in a seemingly infinite number of different ways. The popularity of SC2 has led to a sustained professional scene, where players are sponsored by teams and compete in tournaments for cash prizes. These tournaments can take place online or offline, where players are flown into a studio or arena to compete in front of a live audience. These events are accompanied by commentators who serve a similar role to those in traditional sports. In the past, the first place prizes at the most prestigious tournaments have reached $100,000. This competitive scene has provided the game's passionate fanbase with a clear motivation for becoming better at the game. The professional players serve as role models for how to become better (A beginner's guide to competitive SC2 can be found [here](https://www.youtube.com/watch?v=JSPRgL4D1no)). As a passionate member of this community during the time that this dataset was compiled, I made a serious (but short-lived) attempt to improve my SC2 skill level, during which I absorbed various advice and generally accepted wisdom on how one can get better at the game, as well as a deep appreciation for the talents of professional SC2 players. With this dataset, I would like to see if these community best practices are supported by the differentiation of skill levels based on the league placement of the study participants. At the conclusion of their paper, the researchers discussed the next study that they were embarking on, which involved accepting large numbers of replay files from each participant in order to search for changes in skill level over time. Though each data point in this dataset represents a single moment in time for one player, I want to explore how in-game metrics change across age groups and experience levels both within and across ranks. I plan on using variables in the dataset related to time to see if there are any general trends over time that can be discerned.
+> What makes SC2 an interesting game to study is the fact that the sheer complexity of the game in terms of all the things that could happen at any given moment compounded across an entire game means that every game is unique. Each game can unfold in a seemingly infinite number of different ways. The popularity of SC2 has led to a sustained professional scene, where players are sponsored by teams and compete in tournaments for cash prizes. These tournaments can take place online or offline, where players are flown into a studio or arena to compete in front of a live audience. These events are accompanied by commentators who serve a similar role to those in traditional sports. In the past, the first place prizes at the most prestigious tournaments have reached $100,000. This competitive scene has provided the game's passionate fanbase with a clear motivation for becoming better at the game. The professional players serve as role models for how to become better (A beginner's guide to competitive SC2 can be found [here](https://www.youtube.com/watch?v=JSPRgL4D1no)). As a passionate member of this community during the time that this dataset was compiled, I made a serious (but short-lived) attempt to improve my SC2 skill level, during which I absorbed various advice and generally accepted wisdom on how one can get better at the game, as well as a deep appreciation for the talents of professional SC2 players. With this dataset, I would like to see if these community best practices are supported by the differentiation of skill levels based on the league placement of the study participants. Throughout this project, I consulted with my friend who introduced me to this scene and who is more knowledgeable and skilled than me at this game. We discussed what opinions the community had on the importance of various metrics as well as how to interpret these metrics and whether or not they contain any nonsensical values.
 
 
-> The researchers approached this study from a cognitive science perspective, introducing a new unit of measurement called the Perception-Action Cycle (PAC), which attempts to quantify skill in terms of the amount of time elapsed between a player perceiving an event and acting upon it (a more detailed explanation of the PAC can be found [here](https://www.youtube.com/watch?v=bnRQMv0xIgg)). They hypothesized that the variables that are most correlated with skill change as a player improves and moves up the ranks of the ladder and showed that machine learning methods can be used to predict a player's rank based on such variables. I wish to avoid using variables related to PAC since I don't believe that I have the necessary cognitive science background to understand how they were derived and what they signify. Also, I want to avoid retreading the path the researchers took, since their paper focused heavily on PAC and its relation to skill level.
+> At the conclusion of their paper, the researchers discussed the next study that they were embarking on, which involved accepting large numbers of replay files from each participant in order to search for changes in skill level over time. Though each data point in this dataset represents a single moment in time for one player, I want to explore how in-game metrics change across age groups and experience levels both within and across ranks. I plan on using variables in the dataset related to time to see if there are any general trends over time that can be discerned. The researchers approached this study from a cognitive science perspective, introducing a new unit of measurement called the Perception-Action Cycle (PAC), which attempts to quantify skill in terms of the amount of time elapsed between a player perceiving an event and acting upon it (a more detailed explanation of the PAC can be found [here](https://www.youtube.com/watch?v=bnRQMv0xIgg)). They hypothesized that the variables that are most correlated with skill change as a player improves and moves up the ranks of the ladder and showed that machine learning methods can be used to predict a player's rank based on such variables. I wish to avoid using variables related to PAC since I don't believe that I have the necessary cognitive science background to understand how they were derived and what they signify. Also, I want to avoid retreading the path the researchers took, since their paper focused heavily on PAC and its relation to skill level.
 
 
 ##2. Team
@@ -217,16 +214,10 @@ ggplot(sc, aes(sc$Age)) + geom_density(bw = .5, fill = 'purple', alpha = .5) + l
 ###*APM* (Actions per Minute)
 
 
-![Players must be able to click on the right parts of the screen at the right time while reacting to what the opponent is doing.](3.jpg)
-
-
-![Several units have activated abilities that must be triggered at the right time or targeted abilities that require the player to directly click on the area or unit to be targeted.](4.jpg)
+![Players must be able to click on the right parts of the screen at the right time while reacting to what the opponent is doing.](APM.jpg)
 
 
 > Proceeding to the in-game metrics, I feel that the most obvious one to explore is *APM*, short for Actions Per Minute. An action is defined to be any key press or mouse click performed by the player. In SC2, *APM* is almost synonymous with level skill. It is typically understood that if a player can't perform actions at a rate that is comparable to that of the opponent, then he or she simply can't keep up and will eventually be overwhelmed due to the fact that the opponent can accomplish more in the same amount of time. The description accompanying this dataset does not specify whether the included *APM* values are average or maximum values achieved during each game. I assume that they represent average values since average APM is one of the metrics that the game presents to the player at the conclusion of each game.
-
-
-![This is just one of several pages of detailed statistics that are presented to players at the conclusion of each game.](5.jpg)
 
 
 > During battles, a skilled player should be able to position his army properly and micromanage several units simultaneously without neglecting the more mundane tasks of producing workers and constructing buildings back at base. Winning a battle while forgetting to manage one's bases could leave one in a worse position and allow the opponent to catch up in the near future.
@@ -298,13 +289,20 @@ ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill =
 
 > It should be noted that these variables are rates expressed in "timestamps", which is the way that the game calculates time. There are approximately 88.5 timestamps per second according to the dataset documentation. Since such a short measure of time creates very small values, I will express these variables in either seconds or minutes to make the graphs easier to understand. Throughout this section, I encountered outliers for several variables that made it difficult to read the graphs. I dealt with these outlier values by removing them from the dataset. I made this decision due to these data points comprising an extremely small portion of the dataset. Also, since most of these metrics are more obscure and not discussed often in the community, it would be difficult to decide on a "reasonable" ceiling value to restrict these variables to.
 
+
 > In addition, I decided to omit the *MaxTimeStamp* variable from my analysis. This variable indicates the length of each game. While there may be some correlation between how skilled a player is and his or her average game length, each player's choice in strategy has a major effect on how long a particular game will be. For example, before a game begins, a player can decide to invest significant resoures early on into doing a quick surprise attack to catch the opponent off guard. If such an attack fails, then the attacking player will be in a vulnerable position and may be defeated by the opponent's counterattack. In this case, the game is likely to end early regardless of the outcome. On the other hand, both players can just as easily decide to focus on their own army and building production while avoiding conflicts early on. Such a game would take much longer to finish. Since game length is largely affected by conscious choices that players make in addition to behavior derived from skill level, it would be difficult to isolate these two factors in orde to assess *MaxTimeStamp* as an indicator of skill level.
 
 
-###*WorkersMade*
+###1) *WorkersMade*
 
 
-> The typical answer to the question of how one gets better at SC2 is to make more workers. This might seem surprisingly at first. Worker units are meant to collect resources, construct buildings, and sometimes to serve as sacrificial pawns during attacks or defenses. However, collecting enough resources is of utmost importance, since this is the currency with which players build their army and bases. People often tell novices that they can get promoted out of Bronze League with this simple strategy: make lots of workers, collect lots of resources, build an army with those resources, and send that army straighht to the enemy base.
+> The typical answer to the question of how one gets better at SC2 is to make more workers. This might seem surprisingly at first. Worker units are primarily responsible for collecting resources and constructing buildings. This might sound quite mundate, but collecting enough resources is of utmost importance, since this is the currency with which players build their army and bases. Collecting resources at a suboptimal rate due to having too few workers will create a bottleneck that will slow the rate at which your army can be produced. Additionally, workers can be serve as scouts or sacrificial pawns during attacks and defenses. People often tell novices that they can get promoted out of Bronze League with this simple strategy:constantly produce workers, collect lots of resources, build an army with those resources (the type of units built doesn't really matter), and send that army straight to the enemy base.
+
+
+![These humble workers are busy collecting resources inside this player's main base.](workers.jpg)
+
+
+![This graph showing the number of workers each player possesses at any given time is just one of several pages of detailed statistics that are presented to players at the conclusion of each game.](graph.jpg)
 
 
 > The violin plot below shows that there is a slightly positive correlation between how workers are produced per minute and the rank of the player. By looking at the median lines, one can see a slight downward trend going from Master to GrandMaster. A more pronounced increase can be seen when looking at the outlier values from Diamond to GrandMaster. This demonstrates that one should find the proper balance between making too few workers (collecting resources at a suboptimal rate) and making too many (wasting money by producing unneeded workers who have nothing to do). On the other end, the transition from Bronze to Silver results in the median increasing from 2.934 to 3.84, which is more than the transition between any other pairs of adjacent leagues. This supports the claim that players can be promoted out of Bronze League simply by focusing on improving their worker production habits. Meanwhile, the outlier values in Diamond league could be a sign of players producing more workers than needed, which would be an inefficient use of resources.
@@ -324,10 +322,13 @@ for(league in rank) {
 ```
 
 
-###*MinimapAttacks*
+###2) *MinimapAttacks*
 
 
-> The second most important metric might be a surprising choice as well. The minimap is a miniature map of the battlefield located on the bottom lefthand corner of the user interface (as shown in the first gameplay screenshot in the introduction section). At a glance, players can see what is happening wherever he has an army presence. By clicking on the minimap, players can instantly switch views to the corresponding location. More importantly, he orshe can order units to move to or attack that location. With the minimap, players can react to situations occurring in the game faster and more efficiently. This difference can be compared to the difference between editing a long document with ability to jump to different sections by clicking or scrolling with a mouse versus having to manually scroll through the text using the arrow keys on the keyboard.
+> The second most important metric might be a surprising choice as well. The minimap is a map of the battlefield located on the bottom left corner of the user interface (as shown in the first gameplay screenshot in the introduction section). At a glance, players can see what is happening wherever he has an army presence. By clicking on the minimap, players can instantly switch views to the corresponding location. More importantly, he or she can order units to move to or attack that location. With the minimap, players can observe and react to situations occurring in the game faster and more efficiently. This difference can be compared to the difference between editing a long document with ability to jump to different sections by clicking or scrolling with a mouse versus having to manually scroll through the text using the arrow keys on the keyboard.
+
+
+![This is the interface through which players interact with their bases and armies in Starcraft II. The minimap is positioned at the bottom left corner.](minimap.jpg)
 
 
 ```{r}
@@ -360,7 +361,7 @@ for(league in rank) {
 > In this case, there's a positive correlation that appears to increase with the leagues. The increase in the median between Master and GrandMaster (0.4867 to 1.277) shows the importance of using the minimap to attain the highest level of skill. On the other end, the median also changes significantly from Bronze to Silver (o to 0.07434), which supports the belief that at least some minimap usage can be enough to be promoted out of Bronze League.
 
 
-###*AssignToHotkeys* and *SelectByHotkeys*
+###3) *AssignToHotkeys* and *SelectByHotkeys*
 
 
 > It could be argued that learning to use hotkeys is equally essential to improving at SC2. Hotkeys are the computer game equivalent of keyboard shortcuts, and by not using them, one would be reduced to playing the game with only a mouse. To give an idea of how inefficient and time-consuming that would be, imagine having to type by using a mouse to click each letter on a virutal keyboard at the bottom of the computer screen. This analogy is not far from the truth since most of the buttons corresponding to actions in the game are located at the bottom of the user interface.
@@ -419,20 +420,23 @@ for(league in rank) {
 > In Bronze and Silver League, the median and mean values for *AssignToHotkeys* are close to 1. From my experience with the game, this reflects the habit of assigning one's entire army to one hotkey and updating the assignment by adding newly produced units to that hotkey group. Players who control their entire army as a single large mass mostly do so because they lack the multitasking skills to effectively control multiple groups at a time. This setup makes it difficult for them to split their units up to deal with threats occurring simultaneously in different places. The median and mean values for *SelectByHotkeys* in the lower leagues are similarly low due to the fact that there's no need to make too many hotkey selections when your entire army is assigned to only one or two hotkey groups. This type of habit seems to disappear as one progresses through the leagues. Comparing the lower leagues to the higher ones indicates that these variables are more important in being promoted from the middle leagues. The differences between the Diamond, Master, and GrandMaster League distributions are quite pronounced. This illustrates the importance of multitasking in SC2, and specifically, the importance of maintaining many hotkey groups and continuously selecting them to issue orders to attack and defend.. 
 
 
-###*TotalMapExplored*
+###4) *TotalMapExplored*
 
 
-> 
+> The need for intelligence gathering during battles should be more apparent. As a consequence of games happening under the fog of war, players have an incentive to constantly scout the opposing player 
 
 
-###*UniqueUnitsMade*
+###5) *UniqueUnitsMade*
 
 
 
-###*ComplexAbilitiesUsed* / *ComplexUnitsMade*
+###6) *ComplexAbilitiesUsed* / *ComplexUnitsMade*
 
 
-###*UniqueHotkeys*
+![Several units have activated abilities that must be triggered at the right time or targeted abilities that require the player to directly click on the area or unit to be targeted.](complex.jpg)
+
+
+###7) *UniqueHotkeys*
 
 
 
