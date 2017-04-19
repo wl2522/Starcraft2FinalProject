@@ -1,8 +1,8 @@
 ---
 title: "Examining Changes in Player Skill and Experience in Starcraft II"
 output:
-  html_notebook: default
   html_document: default
+  html_notebook: default
 ---
 
 
@@ -255,18 +255,23 @@ ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill =
 
 ```{r warning=FALSE, message=FALSE}
 
-#Remve data points belonging to Diamond and Master League that have over 275 APM
-
+#Remove data points belonging to Diamond and Master League that have over 275 APM
 
 sc <- sc[!(sc$APM > 275 & sc$League == 'Diamond'),]
 sc <- sc[!(sc$APM > 275 & sc$League == 'Master'),]
 
-ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'APM') + scale_y_continuous(breaks = c(seq(0, 400, 25)))
-
 ggplot(sc, aes(sc$APM)) + geom_density(bw = 3, fill = 'purple', alpha = .5) + labs(x = 'Actions Per Minute') + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + scale_x_continuous(breaks = c(seq(20,400, 20)))
 
+```
+
+
+
+```{r}
+
+ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'APM') + scale_y_continuous(breaks = c(seq(0, 400, 25)))
 
 ```
+
 
 
 > Having removed these outlier values, the shape of the density plot did not change much, but the boxplot looks more reasonable. There is a positive correlation between *League* and *APM* that supports the idea that APM is a reasonable indicator of skill level. However, it should be noted that player actions can rarely be accurately categorized as either "meaningful" or "meaningless". There are often several events happening simultaneously across the battlefield that demand a player's attention. SC2 expertise heavily depends on the ability to prioritize these events and focus attention on the most important ones. To give two extreme examples, a player who devote full attention to only controlling a single unit at a time will most likely not win too many games, much like a player who instantly shifts his or her attention to the latest event without any prioritization. Even with "meaningful" actions, the decisions that a player makes can be judged on a continuous scale of effectiveness that depends on the context of what is happening and what the player knows at that moment. In broadcasted games, commentators are expected to analyze these decisions and point out which ones they think are wise or unwise. Thus, one cannot declare that one player is definitely better than another player based solely on a comparison of APM.
@@ -291,7 +296,9 @@ ggplot(sc, aes(sc$APM)) + geom_density(bw = 3, fill = 'purple', alpha = .5) + la
 7. *UniqueHotkeys*
 
 
-> It should be noted that these variables are rates expressed in "timestamps", which is the way that the game calculates time. There are approximately 88.5 timestamps per second according to the dataset documentation. Since such a short measure of time creates very small values, I will express these variables in either seconds or minutes to avoid dealing with long numbers and to facilitate understanding.
+> It should be noted that these variables are rates expressed in "timestamps", which is the way that the game calculates time. There are approximately 88.5 timestamps per second according to the dataset documentation. Since such a short measure of time creates very small values, I will express these variables in either seconds or minutes to make the graphs easier to understand. Throughout this section, I encountered outliers for several variables that made it difficult to read the graphs. I dealt with these outlier values by removing them from the dataset. I made this decision due to these data points comprising an extremely small portion of the dataset. Also, since most of these metrics are more obscure and not discussed often in the community, it would be difficult to decide on a "reasonable" ceiling value to restrict these variables to.
+
+> In addition, I decided to omit the *MaxTimeStamp* variable from my analysis. This variable indicates the length of each game. While there may be some correlation between how skilled a player is and his or her average game length, each player's choice in strategy has a major effect on how long a particular game will be. For example, before a game begins, a player can decide to invest significant resoures early on into doing a quick surprise attack to catch the opponent off guard. If such an attack fails, then the attacking player will be in a vulnerable position and may be defeated by the opponent's counterattack. In this case, the game is likely to end early regardless of the outcome. On the other hand, both players can just as easily decide to focus on their own army and building production while avoiding conflicts early on. Such a game would take much longer to finish. Since game length is largely affected by conscious choices that players make in addition to behavior derived from skill level, it would be difficult to isolate these two factors in orde to assess *MaxTimeStamp* as an indicator of skill level.
 
 
 ###*WorkersMade*
@@ -325,22 +332,22 @@ for(league in rank) {
 
 ```{r}
 
-ggplot(sc, aes(sc$League, sc$MinimapAttacks)) + geom_boxplot(fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Minimap Attacks Issued per Minute')
+ggplot(sc, aes(sc$League, sc$MinimapAttacks*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Minimap Attacks Issued per Minute')
 
 
 ```
 
 
-> There are a few outlier data points (5/3395) that are obscuring the view of the league distributions. After removing those points, the distribution can be more clearly seen:
+> There are a few outlier data points (17/3395) that are obscuring the view of the league distributions. After removing those points, the distribution can be more clearly seen:
 
 
 ```{r}
 
 #Remove the "MinimapAttacks" outlier values and convert the values in terms of minutes
 
-sc <- filter(sc, sc$MinimapAttacks < 0.0013)
+sc <- filter(sc, sc$MinimapAttacks <= 0.001003)
 
-ggplot(sc, aes(sc$League, sc$MinimapAttacks*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Minimap Attacks Issued per Minute')
+ggplot(sc, aes(sc$League, sc$MinimapAttacks*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Minimap Attacks Issued per Minute') + scale_y_continuous(breaks = c(seq(0,7, 0.25)))
 
 for(league in rank) {
   print(league)
@@ -358,13 +365,77 @@ for(league in rank) {
 
 > It could be argued that learning to use hotkeys is equally essential to improving at SC2. Hotkeys are the computer game equivalent of keyboard shortcuts, and by not using them, one would be reduced to playing the game with only a mouse. To give an idea of how inefficient and time-consuming that would be, imagine having to type by using a mouse to click each letter on a virutal keyboard at the bottom of the computer screen. This analogy is not far from the truth since most of the buttons corresponding to actions in the game are located at the bottom of the user interface.
 
-> Each possible command in the game has an associated default hotkey. In addition, players can assign specific groups of units and buildings to one of the number keys. Therefore, by pressing a number key, a player can immediately select several units, no matter where they are on the map or how far apart they are.
+
+> Each possible command in the game has an associated default hotkey. In addition, players can assign specific groups of units and buildings to one of the number keys. Therefore, by pressing a number key, a player can immediately select several units or buildings simultaneously, no matter where they are on the map or how far apart they are, and issue commands to them. The variable *AssignToHotkeys* indicates how often a player makes these assignments, whereas *SelectByHotkeys* indicates how often a player controls these previously assigned groups using the hotkeys.
+
+
+```{r}
+
+ggplot(sc, aes(sc$League, sc$AssignToHotkeys*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Hotkey Assignments Made per Minute') + scale_y_continuous(breaks = c(seq(0,7, 0.5)))
+
+```
+
+
+```{r}
+
+#Remove outlier values for the "AssignToHotkeys" variable
+
+sc <- filter(sc, sc$AssignToHotkeys*88.5*60 <= 6.5)
+
+ggplot(sc, aes(sc$League, sc$AssignToHotkeys*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Hotkey Assignments Made per Minute') + scale_y_continuous(breaks = c(seq(0,7, 0.5)))
+
+for(league in rank) {
+  print(league)
+  print(summary(filter(sc, sc$League == league)$AssignToHotkeys*88.5*60))
+}
+
+```
+
+
+```{r}
+
+ggplot(sc, aes(sc$League, sc$SelectByHotkeys*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Hotkey Groups Selected per Minute') + scale_y_continuous(breaks = c(seq(0,200, 25)))
+
+```
+
+
+> After removing those outliers, there are still some data points with outlier values for the *SelectByHotkeys* variable (32/3395) that should be removed as well.
+
+
+```{r}
+
+sc <- filter(sc, sc$SelectByHotkeys*88.5*60 < 150)
+
+ggplot(sc, aes(sc$League, sc$SelectByHotkeys*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Hotkey Groups Selected per Minute') + scale_y_continuous(breaks = c(seq(0,200, 25)))
+
+for(league in rank) {
+  print(league)
+  print(summary(filter(sc, sc$League == league)$SelectByHotkeys*88.5*60))
+}
+
+```
+
+
+> In Bronze and Silver League, the median and mean values for *AssignToHotkeys* are close to 1. From my experience with the game, this reflects the habit of assigning one's entire army to one hotkey and updating the assignment by adding newly produced units to that hotkey group. Players who control their entire army as a single large mass mostly do so because they lack the multitasking skills to effectively control multiple groups at a time. This setup makes it difficult for them to split their units up to deal with threats occurring simultaneously in different places. The median and mean values for *SelectByHotkeys* in the lower leagues are similarly low due to the fact that there's no need to make too many hotkey selections when your entire army is assigned to only one or two hotkey groups. This type of habit seems to disappear as one progresses through the leagues. Comparing the lower leagues to the higher ones indicates that these variables are more important in being promoted from the middle leagues. The differences between the Diamond, Master, and GrandMaster League distributions are quite pronounced. This illustrates the importance of multitasking in SC2, and specifically, the importance of maintaining many hotkey groups and continuously selecting them to issue orders to attack and defend.. 
+
+
+###*TotalMapExplored*
+
+
+> 
+
+
+###*UniqueUnitsMade*
+
+
+
+###*ComplexAbilitiesUsed* / *ComplexUnitsMade*
 
 
 ###*UniqueHotkeys*
 
 
-> 
+
 
 
 ```{r}
