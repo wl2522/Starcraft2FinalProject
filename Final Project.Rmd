@@ -417,13 +417,29 @@ for(league in rank) {
 ```
 
 
-> In Bronze and Silver League, the median and mean values for *AssignToHotkeys* are close to 1. From my experience with the game, this reflects the habit of assigning one's entire army to one hotkey and updating the assignment by adding newly produced units to that hotkey group. Players who control their entire army as a single large mass mostly do so because they lack the multitasking skills to effectively control multiple groups at a time. This setup makes it difficult for them to split their units up to deal with threats occurring simultaneously in different places. The median and mean values for *SelectByHotkeys* in the lower leagues are similarly low due to the fact that there's no need to make too many hotkey selections when your entire army is assigned to only one or two hotkey groups. This type of habit seems to disappear as one progresses through the leagues. Comparing the lower leagues to the higher ones indicates that these variables are more important in being promoted from the middle leagues. The differences between the Diamond, Master, and GrandMaster League distributions are quite pronounced. This illustrates the importance of multitasking in SC2, and specifically, the importance of maintaining many hotkey groups and continuously selecting them to issue orders to attack and defend.. 
+> In Bronze and Silver League, the median and mean values for *AssignToHotkeys* are close to 1. From my experience with the game, this reflects the habit of assigning one's entire army to one hotkey and updating the assignment by adding newly produced units to that hotkey group. Players who control their entire army as a single large mass mostly do so because they lack the multitasking skills to effectively control multiple groups at a time. This setup makes it difficult for them to split their units up to deal with threats occurring simultaneously in different places. The median and mean values for *SelectByHotkeys* in the lower leagues are similarly low due to the fact that there's no need to make too many hotkey selections when your entire army is assigned to only one or two hotkey groups. This type of habit seems to disappear as one progresses through the leagues. Comparing the lower leagues to the higher ones indicates that these variables are more important in being promoted from the middle leagues. The differences between the Diamond, Master, and GrandMaster League distributions are quite pronounced. This illustrates the importance of multitasking in SC2, and specifically, the importance of maintaining many hotkey groups and continuously selecting them to issue orders to attack and defend.
 
 
 ###4) *TotalMapExplored*
 
 
-> The need for intelligence gathering during battles should be more apparent. As a consequence of games happening under the fog of war, players have an incentive to constantly scout the opposing player 
+> The need for intelligence gathering during battles should be apparent. As a consequence of games happening under the fog of war, players have an incentive to constantly scout and observe the opposing player's actions while hiding their own actions from enemy scouts. As previously mentioned, players can decide to perform sneak attacks early in a game to win the game quickly and decisively. Even in slower paced games, one should be aware of what kind of army the opponent is producing and where that army is moving. In SC2, each army unit has a "rock, paper, scissors" relationship with other types types of units, meaning that each unit is effective at fighting certain types of units while being ineffective against other types of units. Thus, by keeping watch of the opponent's army, one can respond by producing the types of units that are effective against the opposing army.
+
+
+> In SC2, the battlefield is divided into squares that are about the size of the mouse pointer. The *TotalMapExplored* metric measures how many 24x24 grids of these squares a player has explored per timestamp. 
+
+
+```{r}
+
+ggplot(sc, aes(sc$League, sc$TotalMapExplored*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Number of 24x24 Map Grids Explored per Minute')+ scale_y_continuous(breaks = c(seq(0,5, 0.25)))
+
+for(league in rank) {
+  print(league)
+  print(summary(filter(sc, sc$League == league)$TotalMapExplored*88.5*60))
+}
+
+
+```
 
 
 ###5) *UniqueUnitsMade*
