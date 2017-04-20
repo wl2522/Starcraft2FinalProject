@@ -2,10 +2,10 @@
 title: Examining In-Game Metric Importance and Variations in Player Skill in Starcraft
   II
 output:
-  html_notebook:
+  html_document:
     fig_height: 8
     fig_width: 10
-  html_document:
+  html_notebook:
     fig_height: 8
     fig_width: 10
 ---
@@ -278,13 +278,9 @@ ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill =
 
 ##4. Executive Summary
 
-1. *WorkersMade*
-2. *MinimapAttacks* / *MinimapRightClicks*
-3. *AssignToHotkeys* / *SelectByHotkeys*
-4. *TotalMapExplored*
-5. *UniqueUnitsMade*
-6. *ComplexAbilitiesUsed* / *ComplexUnitsMade*
-7. *UniqueHotkeys*
+
+> 
+
 
 ##5. Main Analysis
 
@@ -634,7 +630,7 @@ corrplot.mixed(corr_total, lower = 'number', upper = 'ellipse', col = viridis(25
 ```
 
 
-> At first glance, it seems like there are some correlations between some metrics and the three time variables. More importantly, it looks like all but one of the metrics are negatively correlated with age and positively correlated with playing more hours per week and in total. For *Age*, the three variables with the greatest magnitude correlation coefficients are *APM*, *SelectByHotkeys*, and *AssignToHotkeys*. 
+> At first glance, it seems like there are some correlations between some metrics and the three time variables. More importantly, it looks like all but one of the metrics are negatively correlated with age and positively correlated with playing more hours per week and in total. Interestingly enough, for all three time variables, the three variables with the greatest magnitude correlation coefficients are *APM*, *SelectByHotkeys*, and *AssignToHotkeys*. 
 
 
 ```{r}
@@ -663,8 +659,43 @@ ggplot(sc, aes(Age, UniqueHotkeys*88.5*60)) + geom_point(color = 'purple', alpha
 ```
 
 
-> The slope of the regression line looks to be almost 0 unless one is looking closely. Therefore, it seems that age does not have much of an effect on how players customize their hotkey setup.
+> The slope of the regression line looks to be almost 0 unless one is looking closely. Therefore, it seems that age does not have much of an effect on how players customize their hotkey setup. This could be in part due to our previous finding that *UniqueHotkeys* seems to be the least important metric in the skill heirarchy.
+
+
+```{r}
+
+ggplot(sc, aes(HoursPerWeek, APM)) + geom_point(color = 'purple', alpha = 0.25) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'Reported Hours Played Per Week', y = 'Actions Per Minute') + geom_smooth(method = 'lm', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + scale_y_continuous(breaks = c(seq(0, 400, 25))) + scale_x_continuous(breaks = c(seq(0, 100, by = 5)))
+
+ggplot(sc, aes(HoursPerWeek, SelectByHotkeys*88.5*60)) + geom_point(color = 'purple', alpha = 0.25) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'Reported Hours Played Per Week', y = 'Hotkey Groups Selected per Minute')  + geom_smooth(method = 'lm', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + scale_y_continuous(breaks = c(seq(0,200, 25))) + scale_x_continuous(breaks = c(seq(0, 100, by = 5)))
+
+ggplot(sc, aes(HoursPerWeek, AssignToHotkeys*88.5*60)) + geom_point(color = 'purple', alpha = 0.25) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'Reported Hours Played Per Week', y = 'Hotkey Assignments Made per Minute') + geom_smooth(method = 'lm', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + scale_y_continuous(breaks = c(seq(0,7, 0.5))) + scale_x_continuous(breaks = c(seq(0, 100, 5)))
+
+```
+
+
+> These three variables exhibit a positive correlation with *HoursPerWeek*, with correlation coefficients that have slightly higher magnitudes when compared to those of *Age*.
+
+
+```{r}
+
+ggplot(sc, aes(TotalHours, APM)) + geom_point(color = 'purple', alpha = 0.25) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'Reported Total Number of Hours Played', y = 'Actions Per Minute') + geom_smooth(method = 'lm', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + scale_y_continuous(breaks = c(seq(0, 400, 25))) + scale_x_continuous(breaks = c(seq(0, 4000, 250)))
+
+ggplot(sc, aes(TotalHours, SelectByHotkeys*88.5*60)) + geom_point(color = 'purple', alpha = 0.25) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'Reported Total Number of Hours Played', y = 'Hotkey Groups Selected per Minute')  + geom_smooth(method = 'lm', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + scale_y_continuous(breaks = c(seq(0,200, 25))) +  scale_x_continuous(breaks = c(seq(0, 4000, 250)))
+
+ggplot(sc, aes(TotalHours, AssignToHotkeys*88.5*60)) + geom_point(color = 'purple', alpha = 0.25) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'Reported Total Number of Hours Played', y = 'Hotkey Assignments Made per Minute') + geom_smooth(method = 'lm', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + scale_y_continuous(breaks = c(seq(0,7, 0.5))) +  scale_x_continuous(breaks = c(seq(0, 4000, 250)))
+
+```
+
+
+> This set of scatterplots show an even greater positive correlation between the three variables and *TotalHours*. Although these findings might not be completely accurate due to the values being self-reported, I feel that the correlation is strong enough to warrant future reearch into the relationships among these variables.
 
 
 ##6. Conclusion
+
+
+> As mentioned during the introduction and main analysis, a major limitation of this dataset is the fact that the time variables are self-reported by participants. Also, since each data point only represents one player's skill level at a single point in time (one game), there isn't a way to observe that player's skill over time. By default, SC2 saves a dated replay for every single game played to a local folder. Even when the game is uninstalled, this folder is not automatically removed from the computer. Therefore, these problems could be solved by collecting a second, more comprehensive dataset, one where each participant submits the entire contents of their replay folder (or as many of the replays as possible). With such a dataset, player performance can be tracked across a longer period of time. In addition, *TotalHours* can be directly calculated by summing the lengths of every game in the replay folder. *HoursPerWeek* can subsequently be calculated by binning the games by calendar week based on the dates in the file names and taking an average across the total number of weeks spanned by each player's replay file collection.
+
+
+> The main lesson that I learned from analyzing this dataset is to be skeptical of the variable names and descriptions provided by whoever collected the data. These descriptions could be vague or even incorrect. Domain knowledge is valuable in deciding whether one's interpretation of a vaguely described variable is incorrect. Without domain knowledge, it would be helpful to try transforming the variables to a more familiar form (in this case, converting rate variables from timestamps to minutes). This transformation, combined with some research on the context and origin of the dataset, can be helpful in deciding if the resulting values are sensible given the proposed definition of the variable.
+
 
