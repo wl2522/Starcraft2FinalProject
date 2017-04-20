@@ -302,7 +302,7 @@ ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill =
 > This dataset contains three variables that measure time in different ways. One variable is the age of the player. The other two are the total hours the player has played the game and the number of hours played per week. I primarily wanted to see if there was any evidence supporting the belief that player skill deteriorates with age. Additionally, I wanted to see which player skills improve the most with additional experience playing the game. To achieve this, I used a correlation plot to show the relationships between these variables and the skill variables.
 
 
-![]()
+![](correlation_matrix.png)
 
 
 > 
@@ -717,7 +717,7 @@ ggplot(sc, aes(TotalHours, AssignToHotkeys*88.5*60)) + geom_point(color = 'purpl
 > This set of scatterplots show an even greater positive correlation between the three variables and *TotalHours*. Although these findings might not be completely accurate due to the values being self-reported, I feel that the correlation is strong enough to warrant future reearch into the relationships among these variables.
 
 
-> The following are visualizations that will be used in the Executive Summary section.
+> The following is the code used for the visualizations used in the Executive Summary section.
 
 
 ```{r}
@@ -745,6 +745,16 @@ uniquehotkeys <- ggplot(sc, aes(sc$League, sc$UniqueHotkeys*88.5*60)) + geom_box
 grid.arrange(workers, minimapattacks, assignhotkeys, selecthotkeys, mapexplored, complexability, complexunits, uniquehotkeys)
 
 ```
+
+
+```{r}
+
+week_subset <- data.frame(c(sc[3:5], sc[6:8]))
+corr_week_subset <- cor(week_subset)
+week <- corrplot(corr_week_subset, method = 'number', diag = FALSE, type = 'upper', col = viridis(256), title = 'Significant Correlations Among Skills and Time Variables', mar=c(0,0,1,0))
+
+```
+
 
 
 ##6. Conclusion
