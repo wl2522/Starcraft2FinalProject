@@ -2,10 +2,10 @@
 title: Examining In-Game Metric Importance and Variations in Player Skill in Starcraft
   II
 output:
-  html_document:
+  html_notebook:
     fig_height: 8
     fig_width: 10
-  html_notebook:
+  html_document:
     fig_height: 8
     fig_width: 10
 ---
@@ -282,7 +282,7 @@ ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill =
 > My main goal with this project were to either prove or disprove the heirarchy of skills that is often touted within the SC2 community as well as to observe the effects that time, in the form of player age and hours spent playing SC2, had on these skills. From my analysis of the dataset, I concluded that the heirarchy and its ordering of skills is mostly accurate. Also, I discovered that time appears to only have a noticeable effect on a specific subset of the skills.
 
 
-> This heirarchy can be thoguht of as a road map for how a player can gradually improve in skill progress through the various leagues of the online ladder system. Starting from the lowest level, Bronze League, a player should focus on learning each listed skill in the order of the heirarchy. Mastering the initial skills will allow a player to quickly rise through the lower ranks, whereas mastery of the latter skills differentiate the mid-tier players from the high-tier ones. I attempted to validate this belief by observing boxplots of the various in-game metrics and comparing the changes in median and mean values when transitioning from lower leagues to higher leagues. I drew a line of best fit to compare the rate of change between leagues and 
+> The heirarchy of skills can be thought of as a road map for how a player can gradually improve in skill progress through the various leagues of the online ladder system. Starting from the lowest level, Bronze League, a player should focus on learning each listed skill in the order of the heirarchy. Mastering the initial skills will allow a player to quickly rise through the lower ranks, whereas mastery of the latter skills differentiate the mid-tier players from the high-tier ones. I attempted to validate this belief by observing boxplots of the various in-game metrics and comparing the changes in median and mean values when transitioning from lower leagues to higher leagues. For each metric, I drew a line of best fit to observe the rate of change in that metric. Primarily, I noted the slope of the line as it transitioned between different pairs of adjacent leagues and looked for the transitions that led to the steep slopes. This steepness would indicate that there is a noticeable difference in mastery of that skill between players of those two leagues.
 
 > 
 
@@ -693,6 +693,36 @@ ggplot(sc, aes(TotalHours, AssignToHotkeys*88.5*60)) + geom_point(color = 'purpl
 
 
 > This set of scatterplots show an even greater positive correlation between the three variables and *TotalHours*. Although these findings might not be completely accurate due to the values being self-reported, I feel that the correlation is strong enough to warrant future reearch into the relationships among these variables.
+
+
+> The following are visualizations that will be used in the Executive Summary section.
+
+
+```{r}
+
+library(gridExtra)
+
+workers <- ggplot(sc, aes(sc$League, sc$WorkersMade*88.5*60)) + geom_boxplot(outlier.shape = NA, fill = 'purple', alpha = 0.25) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 0.75, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'), axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), plot.title = element_text(size = 10)) + labs(title = 'Workers Produced per Minute')
+
+minimapattacks <- ggplot(sc, aes(sc$League, sc$MinimapRightClicks*88.5*60)) + geom_boxplot(outlier.shape = NA, fill = 'purple', alpha = 0.25) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.5, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'), axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), plot.title = element_text(size = 10)) + labs(title = 'Minimap Right Clicks Performed per Minute') + scale_y_continuous(breaks = c(seq(0, 15, 1)))
+
+minimaprightclicks <- ggplot(sc, aes(sc$League, sc$MinimapRightClicks*88.5*60)) + geom_boxplot(outlier.shape = NA, fill = 'purple', alpha = 0.25) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Minimap Right Clicks Performed per Minute')
+
+assignhotkeys <- ggplot(sc, aes(sc$League, sc$AssignToHotkeys*88.5*60)) + geom_boxplot(outlier.shape = NA, fill = 'purple', alpha = 0.25) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 0.75, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major = element_line(color = 'gray'), axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), plot.title = element_text(size = 10)) + labs(title = 'Hotkey Assignments Made per Minute')
+
+selecthotkeys <- ggplot(sc, aes(sc$League, sc$SelectByHotkeys*88.5*60)) + geom_boxplot(outlier.shape = NA, fill = 'purple', alpha = 0.25) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 0.75, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major = element_line(color = 'gray'), axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), plot.title = element_text(size = 10)) + labs(title = 'Hotkey Groups Selected per Minute')
+
+mapexplored <- ggplot(sc, aes(sc$League, sc$TotalMapExplored*88.5*60)) + geom_boxplot(outlier.shape = NA, fill = 'purple', alpha = 0.25) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 0.75, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major = element_line(color = 'gray'), axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), plot.title = element_text(size = 10)) + labs(title = 'Number of 24x24 Map Grids Explored per Minute')
+
+complexability <- ggplot(sc, aes(sc$League, sc$ComplexAbilityUsed*88.5*60)) + geom_boxplot(outlier.shape = NA, fill = 'purple', alpha = 0.25) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 0.75, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major = element_line(color = 'gray'), axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), plot.title = element_text(size = 10)) + labs(title = 'Targeted Abilities Used per Minute')
+
+complexunits <- ggplot(sc, aes(sc$League, sc$ComplexUnitsMade*88.5*60)) + geom_boxplot(outlier.shape = NA, fill = 'purple', alpha = 0.25) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 0.75, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =element_line(color = 'gray'), axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), plot.title = element_text(size = 10)) + labs(title = 'Advanced Units Produced per Minute')
+
+uniquehotkeys <- ggplot(sc, aes(sc$League, sc$UniqueHotkeys*88.5*60)) + geom_boxplot(outlier.shape = NA, fill = 'purple', alpha = 0.25) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 0.75, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major = element_line(color = 'gray'), axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), plot.title = element_text(size = 10)) + labs(title = 'Unique Hotkeys Used per Minute')
+
+grid.arrange(workers, minimapattacks, assignhotkeys, selecthotkeys, mapexplored, complexability, complexunits, uniquehotkeys)
+
+```
 
 
 ##6. Conclusion
