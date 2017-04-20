@@ -2,8 +2,12 @@
 title: Examining In-Game Metric Importance and Variations in Player Skill in Starcraft
   II
 output:
-  html_document: default
-  html_notebook: default
+  html_notebook:
+    fig_height: 8
+    fig_width: 10
+  html_document:
+    fig_height: 8
+    fig_width: 10
 ---
 
 
@@ -33,12 +37,12 @@ output:
 
 ***
 
-1. Check the self-reported variables for nonsensical/missing/outlier values and decide on a way to deal with them
-2. Analyze the three self-reported time variables not derived from the replay files, *TotalHours*, *HoursPerWeek*, and *Age*
-3. Propose an approximate order of importance among the in-game metrics included in the dataset (in terms of which skills the SC2 community deems essential for increasing skill level as opposed to what's "nice to have", similar to Maslow's hierarchy of needs)
-4. Explore these variables individually in the order proposed
-5. Visualize these variables together with the time variables to get an imprecise idea of how these metrics changes over time
-6. Create multivariate plots to find possible relationships between different metrics across different leagues and experience levels
+1. Check the self-reported variables for nonsensical/missing/outlier values and decide on a way to deal with them.
+2. Analyze the three self-reported time variables not derived from the replay files, *TotalHours*, *HoursPerWeek*, and *Age*.
+3. Propose an approximate order of importance among the in-game metrics included in the dataset (in terms of which skills the SC2 community deems essential for increasing skill level as opposed to what's "nice to have", similar to Maslow's hierarchy of needs).
+4. Explore these variables individually in the order proposed.
+5. Visualize these variables together with the time variables to get an imprecise idea of how these metrics changes over time.
+6. Create multivariate plots to find possible relationships between different metrics across different leagues and experience levels.
 
 ***
 
@@ -87,10 +91,11 @@ sc <- mutate(sc, League = rank[LeagueIndex])
 >  Since my analysis will partly be focused on the change in player metrics as a function of time, it would be appropriate to start with the two time variables, *HoursPerWeek* and *"*TotalHours*"*. These variables are prone to reporting inaccuracy due to the fact that participants are attempting to generalize several months of playing experience and habits into two numbers. By removing outlier values and drawing scatterplots, it is also obvious that the reported values for both variables have been rounded. For *TotalHours*, the rounding looks to have been done by the respondents since there are data points scattered between rounded values. For *HoursPerWeek*, I assume that respondents could only choose from certain  values preselected by the researchers rather than typing their answer manually.
 
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 
-ggplot(sc %>% filter(TotalHours < 2000), mapping = aes(x = TotalHours, y = APM)) + geom_point(alpha = 0.3, color = 'purple') + labs(title='Total Hours Played vs. APM') + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
-ggplot(sc %>% filter(HoursPerWeek < 50), mapping = aes(x = HoursPerWeek, y = APM)) + geom_point(alpha= 0.3, color = 'purple') + labs(title='Hours Played per Week vs. APM') + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
+ggplot(sc, aes(sc$HoursPerWeek)) + geom_density(bw = 2.5, fill = 'purple', alpha = .5) + labs(x = 'Reported Hours Played Per Week', title = 'HoursPerWeek Outliers Fenced') + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
+
+ggplot(sc, aes(sc$HoursPerWeek)) + geom_density(bw = 2.5, fill = 'purple', alpha = .5) + labs(x = 'Reported Hours Played Per Week', title = 'HoursPerWeek Outliers Removed') + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
 
 ```
 
@@ -103,7 +108,7 @@ summary(sc$TotalHours)
 ```
 
 
-> What immediately stands out in the summary statistics is the maximum values for both variables. The maximum value for *HoursPerWeek* corresponds to 24 hours per day of playing time every week, while the maximum reported value of 1,000,000 for *TotalHours* far exceeds the number of hours that had elapsed since SC2 was released to the time that the data collection period concluded. When I discussed this matter with Professor Robbins, one of her suggestions was to "fence" the values such that outliers are replaced with a sensible ceiling value. From interviews of professional players as well as hearsay from those who keep in contact with them, I chose 98 hours played per week as a ceiling value. This corresponds to 14 hours played per day, which is a habit that could most likely only be sustained by professional players signed to a major team. Such teams often operate a "team house" where all the players live and train together. It is not uncommon for the sponsors to hire maids to cook and clean so that the players can focus all their attention on playing SC2. In such cases, it is not unusual for players to devote 10-14 hours per day to practicing for upcoming important matches.
+> What immediately stands out in the summary statistics and the density plots are the maximum values for both variables. The maximum value for *HoursPerWeek* corresponds to 24 hours per day of playing time every week, while the maximum reported value of 1,000,000 for *TotalHours* far exceeds the number of hours that had elapsed since SC2 was released to the time that the data collection period concluded. When I discussed this matter with Professor Robbins, one of her suggestions was to "fence" the values such that outliers are replaced with a sensible ceiling value. From interviews of professional players as well as hearsay from those who keep in contact with them, I chose 98 hours played per week as a ceiling value. This corresponds to 14 hours played per day, which is a habit that could most likely only be sustained by professional players signed to a major team. Such teams often operate a "team house" where all the players live and train together. It is not uncommon for the sponsors to hire maids to cook and clean so that the players can focus all their attention on playing SC2. In such cases, it is not unusual for players to devote 10-14 hours per day to practicing for upcoming important matches.
 
 
 > Another suggestion was to simply remove these outliers from the dataset, since the respondents might not have given a serious answer to the question. When both methods are compared side by side below, there doesn't seem to be any appreciable difference due to the small number of outliers (56 out of 3,339). As for the single data point with a value of 0 hours per week, I interpreted that as the respondent playing the game very infrequently. Because there was only one such data point and the fact that the next closest value is 2, I decided not to remove it. 
@@ -201,6 +206,8 @@ sc <- sc_remove
 
 summary(sc$Age)
 
+ggplot(sc %>% filter(HoursPerWeek < 50), mapping = aes(x = League, y = Age)) + geom_col(alpha= 0.3, color = 'purple') + labs(title='Age vs. League') + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
+
 ggplot(sc, aes(sc$Age)) + geom_histogram(binwidth = 1, fill = 'purple', alpha = .5) + scale_x_continuous(breaks = c(seq(10,44, 2))) + labs(x = 'Age of the Participant') + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray'))
 
 
@@ -237,7 +244,7 @@ ggplot(sc, aes(sc$APM)) + geom_density(bw = 3, fill = 'purple', alpha = .5) + la
 
 ```{r warning=FALSE, message=FALSE}
 
-ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'APM') + scale_y_continuous(breaks = c(seq(0, 400, 25)))
+ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Actions per Minute') + scale_y_continuous(breaks = c(seq(0, 400, 25)))
 
 ```
 
@@ -260,7 +267,7 @@ ggplot(sc, aes(sc$APM)) + geom_density(bw = 3, fill = 'purple', alpha = .5) + la
 
 ```{r}
 
-ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.5, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'APM') + scale_y_continuous(breaks = c(seq(0, 400, 25)))
+ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.5, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Actions Per Minute') + scale_y_continuous(breaks = c(seq(0, 400, 25)))
 
 ```
 
@@ -340,10 +347,10 @@ for(league in rank) {
 
 ```{r}
 
-ggplot(sc, aes(sc$League, sc$MinimapAttacks*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.5, aes(group = 1)) +  theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Minimap Attacks Issued per Minute')
+ggplot(sc, aes(sc$League, sc$MinimapAttacks*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) +  theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Minimap Attacks Issued per Minute')
 
 
-ggplot(sc, aes(sc$League, sc$MinimapRightClicks*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.5, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Minimap Right Clicks Performed per Minute')
+ggplot(sc, aes(sc$League, sc$MinimapRightClicks*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Minimap Right Clicks Performed per Minute')
 
 
 ```
@@ -421,7 +428,7 @@ for(league in rank) {
 
 ```{r}
 
-ggplot(sc, aes(sc$League, sc$SelectByHotkeys*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Hotkey Groups Selected per Minute') + scale_y_continuous(breaks = c(seq(0,200, 25)))
+ggplot(sc, aes(sc$League, sc$SelectByHotkeys*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Hotkey Groups Selected per Minute')
 
 ```
 
@@ -431,11 +438,11 @@ ggplot(sc, aes(sc$League, sc$SelectByHotkeys*88.5*60)) + geom_boxplot(outlier.co
 
 ```{r}
 
-#Remove outlier values for the "SelectByHotkeys" variable
+#Remove outlier values for the "SelectByHotkeys" variable and convert the values in terms of minutes
 
 sc <- filter(sc, sc$SelectByHotkeys*88.5*60 < 150)
 
-ggplot(sc, aes(sc$League, sc$SelectByHotkeys*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Hotkey Groups Selected per Minute') + scale_y_continuous(breaks = c(seq(0,200, 25)))
+ggplot(sc, aes(sc$League, sc$SelectByHotkeys*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Hotkey Groups Selected per Minute') + scale_y_continuous(breaks = c(seq(0,200, 10)))
 
 for(league in rank) {
   print(league)
@@ -469,6 +476,8 @@ ggplot(sc, aes(sc$League, sc$TotalMapExplored*88.5*60)) + geom_boxplot(outlier.c
 
 ```{r}
 
+#Remove outlier values for the "TotalMapExplored" variable and convert the values in terms of minutes
+
 sc <- filter(sc, sc$TotalMapExplored < 0.00074)
 
 ggplot(sc, aes(sc$League, sc$TotalMapExplored*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Number of 24x24 Map Grids Explored per Minute') + scale_y_continuous(breaks = c(seq(0,5, 0.25)))
@@ -492,7 +501,7 @@ for(league in rank) {
 
 ```{r}
 
-ggplot(sc, aes(sc$League, sc$UniqueUnitsMade*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Unique Units Made per Minute')
+ggplot(sc, aes(sc$League, sc$UniqueUnitsMade*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Unique Units Made per Minute') + scale_y_continuous(breaks = c(seq(0, 1.1, 0.05)))
 
 ```
 
@@ -514,7 +523,6 @@ ggplot(sc, aes(sc$League, sc$UniqueUnitsMade*sc$MaxTimeStamp)) + geom_boxplot(ou
 
 
 > In SC2, there is a heirarchy in which all the different types of buildings and army units belong, called the "tech tree". In the tech tree, buildings and units further up the tree can only be accessed once certain buildings further down in the tech tree have been constructed. This network of dependencies ensures that the inexpensive, low-tech buildings and units are accessible relatively early in the game, whereas the most powerful and expensive units are reserved for later in the game. Often, these units have devastating abilities that can be used repeatedly (with a predetermined recharge period in between uses) to devastate an opposing army if used correctly. This depends on the player manually clicking on the intended target in an accurate and timely manner. Otherwise, the attack misses its target and is wasted.
- 
  
 
 ![Several units have activated abilities that must be triggered at the right time or targeted abilities that require the player to directly click on the area or unit to be targeted.](complex.jpg)
@@ -541,7 +549,7 @@ ggplot(sc, aes(sc$League, sc$ComplexUnitsMade*88.5*60)) + geom_boxplot(outlier.c
 
 sc <- filter(sc, sc$ComplexAbilityUsed < 0.00188)
 
-ggplot(sc, aes(sc$League, sc$ComplexAbilityUsed*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Targeted Abilities Used per Minute')
+ggplot(sc, aes(sc$League, sc$ComplexAbilityUsed*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Targeted Abilities Used per Minute') + scale_y_continuous(breaks = c(seq(0,10, 0.5)))
 
 for(league in rank) {
   print(league)
@@ -557,7 +565,7 @@ for(league in rank) {
 
 sc <- filter(sc, sc$ComplexUnitsMade < 0.00075)
 
-ggplot(sc, aes(sc$League, sc$ComplexUnitsMade*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Advanced Units Produced per Minute')
+ggplot(sc, aes(sc$League, sc$ComplexUnitsMade*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Advanced Units Produced per Minute') + scale_y_continuous(breaks = c(seq(0,4, 0.25)))
 
 for(league in rank) {
   print(league)
@@ -579,7 +587,7 @@ for(league in rank) {
 
 ```{r}
 
-ggplot(sc, aes(sc$League, sc$UniqueHotkeys*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Unique Hotkeys Used per Minute') 
+ggplot(sc, aes(sc$League, sc$UniqueHotkeys*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Unique Hotkeys Used per Minute') + scale_y_continuous(breaks = c(seq(0, 2, 0.1)))
 
 #Display summary statistics for "UniqueHotkeys" for each league
 
@@ -594,6 +602,68 @@ for(league in rank) {
 > The data seems to support my intuition. In the Lower Leagues, the LOESS line increases quite slowly, but suddenly increases in slow when transitioning from Platinum to Diamond League. It seems that this variable is not so important for less skilled player, but it's a deciding factor for how skilled players are in the upper leagues.
 
 
+###Analysis of Each Metric with Respect to Time Variables
+
+
+> Having analyzed each of the relevant variables individually, I'd like to have a quick overview of the correlations between the various in-game metrics and each time variable.
+
+
+```{r}
+
+library(corrplot)
+library(viridis)
+
+#Visualize correlation coefficients between "Age" and all other variables
+
+compare_age <- data.frame(c(sc[3], sc[6:11], sc[16:17], sc[19:20]))
+corr_age <- cor(compare_age)
+corrplot.mixed(corr_age, lower = 'number', upper = 'ellipse', col = viridis(256), title = 'Correlations with Player Age', mar=c(0,0,1,0))
+
+#Visualize correlation coefficients between "HoursPerWeek" and all other variables
+
+compare_week <- data.frame(c(sc[4], sc[6:11], sc[16:17], sc[19:20]))
+corr_week <- cor(compare_week)
+corrplot.mixed(corr_week, lower = 'number', upper = 'ellipse', col = viridis(256), title = 'Correlations with Hours Played per Week', mar=c(0,0,1,0))
+
+#Visualize correlation coefficients between "TotalHours" and all other variables
+
+compare_total <- data.frame(c(sc[5], sc[6:11], sc[16:17], sc[19:20]))
+corr_total <- cor(compare_total)
+corrplot.mixed(corr_total, lower = 'number', upper = 'ellipse', col = viridis(256), title = 'Correlations with Total Hours Played', mar=c(0,0,1,0))
+
+```
+
+
+> At first glance, it seems like there are some correlations between some metrics and the three time variables. More importantly, it looks like all but one of the metrics are negatively correlated with age and positively correlated with playing more hours per week and in total. For *Age*, the three variables with the greatest magnitude correlation coefficients are *APM*, *SelectByHotkeys*, and *AssignToHotkeys*. 
+
+
+```{r}
+
+ggplot(sc, aes(Age, APM)) + geom_point(color = 'purple', alpha = 0.25) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'Player Age', y = 'Actions Per Minute') + geom_smooth(method = 'lm', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + scale_y_continuous(breaks = c(seq(0, 400, 25)))
+
+ggplot(sc, aes(Age, SelectByHotkeys*88.5*60)) + geom_point(color = 'purple', alpha = 0.25) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'Player Age', y = 'Hotkey Groups Selected per Minute')  + geom_smooth(method = 'lm', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + scale_y_continuous(breaks = c(seq(0,200, 25)))
+
+ggplot(sc, aes(Age, AssignToHotkeys*88.5*60)) + geom_point(color = 'purple', alpha = 0.25) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'Player Age', y = 'Hotkey Assignments Made per Minute') + geom_smooth(method = 'lm', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + scale_y_continuous(breaks = c(seq(0,7, 0.5)))
+
+```
+
+
+> It should be noted that there is an obvious correlation between the two hotkey variables and *APM*, which is due to the fact that proper hotkey usage contributes greatly to having a high APM by virtue of allowing faster and more efficient actions, which save the player time that can be spent on performing more actions. Similarly, This is the case for all of the other variables show in the correlation matrix as well. Therefore, it is natural that these variables would be correlated in the same direction. 
+
+
+> One can see that the variance for any given age group decreases with age due to the fact that sample size for older players is much smaller than those in their teens and early twenties. Therefore, it looks like there is some evidence that age negatively affects these metrics.
+
+> The only variable with a positive correlation with *Age* is *UniqueHotKeys*.
+
+
+```{r}
+
+ggplot(sc, aes(Age, UniqueHotkeys*88.5*60)) + geom_point(color = 'purple', alpha = 0.25) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'Player Age', y = 'Unique Hotkeys Used per Minute') + geom_smooth(method = 'lm', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + scale_y_continuous(breaks = c(seq(0, 2, 0.1)))
+
+```
+
+
+> The slope of the regression line looks to be almost 0 unless one is looking closely. Therefore, it seems that age does not have much of an effect on how players customize their hotkey setup.
 
 
 ##6. Conclusion
