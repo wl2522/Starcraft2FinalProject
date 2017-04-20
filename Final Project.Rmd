@@ -1,5 +1,6 @@
 ---
-title: "Examining In-Game Metric Importance and Variations in Player Skill in Starcraft II"
+title: Examining In-Game Metric Importance and Variations in Player Skill in Starcraft
+  II
 output:
   html_document: default
   html_notebook: default
@@ -270,7 +271,13 @@ ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill =
 
 ##4. Executive Summary
 
-
+1. *WorkersMade*
+2. *MinimapAttacks* / *MinimapRightClicks*
+3. *AssignToHotkeys* / *SelectByHotkeys*
+4. *TotalMapExplored*
+5. *UniqueUnitsMade*
+6. *ComplexAbilitiesUsed* / *ComplexUnitsMade*
+7. *UniqueHotkeys*
 
 ##5. Main Analysis
 
@@ -391,7 +398,7 @@ for(league in rank) {
 
 ```{r}
 
-ggplot(sc, aes(sc$League, sc$AssignToHotkeys*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Hotkey Assignments Made per Minute') + scale_y_continuous(breaks = c(seq(0,7, 0.5)))
+ggplot(sc, aes(sc$League, sc$AssignToHotkeys*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Hotkey Assignments Made per Minute')
 
 ```
 
@@ -480,15 +487,27 @@ for(league in rank) {
 ###5) *UniqueUnitsMade*
 
 
-> At first, I thought this variable measured the rate that players were producing units. However, upon converting the values to reflect minutes rather than timestamps, I saw that the variables were much too low, considering that games typically last for 15-25 minutes and armies often consist of dozens of units. 
+> At first, I thought this variable measured the rate that players were producing units. This would be a measure of a player's macromanagement and being able to efficiently spend his or her resources. However, upon converting the values to reflect minutes rather than timestamps, I saw that the values were much too low, considering that games typically last for 15-25 minutes and armies often consist of dozens of units. 
 
 
 ```{r}
 
-ggplot(sc, aes(sc$League, sc$UniqueUnitsMade*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Number of 24x24 Map Grids Explored per Minute')
+ggplot(sc, aes(sc$League, sc$UniqueUnitsMade*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Unique Units Made per Minute')
 
 ```
 
+
+> These values would imply that on average, only a handful of units are produced per game, which is clearly not correct. I then tried multiplying this variable by *MaxTimeStamp*, which indicates how many timestamps each game contained, which would indicate the duration of each game. This should provide the total number of unique units produced per game.
+
+
+```{r}
+
+ggplot(sc, aes(sc$League, sc$UniqueUnitsMade*sc$MaxTimeStamp)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Unique Units Made per Game') + scale_y_continuous(breaks = c(seq(0,15, 1)))
+
+```
+
+
+> Notice that all of the values fall between 2 and 13. Given this range, it is most likely that this variable is the number of different types of units produced per game divided by the total length of the game considering that each player can only choose from at most 15 types of units to produce. A value of 2 would indicate that the player produced nothing but workers and the most basic, low-tech attacking unit. Given my new understanding of this variable, I decided that I would not use it any further during this project. While making a diverse army comprised of various types of units can be seen as a measure of how well a player can adapt to changing situations in the game by adjusting the composition of his or her army, it is also true that *UniqueUnitsMade* is naturally correlated with game length. This is due to the fact that the more advanced, hi-tech units cannot be produced early in the game due to their high costs and prerequisite infrastructure requirements (this idea is explained in more detail in the next section). As mentioned before, game length is in part determined by conscious decisions made by each player, so it would not be appropriate to interpret this metric as pure measure of skill.
 
 
 ###6) *ComplexAbilitiesUsed* / *ComplexUnitsMade*
