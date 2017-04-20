@@ -1,8 +1,8 @@
 ---
-title: "Examining Changes in Player Skill and Experience in Starcraft II"
+title: "Examining In-Game Metric Importance and Variations in Player Skill in Starcraft II"
 output:
-  html_notebook: default
   html_document: default
+  html_notebook: default
 ---
 
 
@@ -259,7 +259,7 @@ ggplot(sc, aes(sc$APM)) + geom_density(bw = 3, fill = 'purple', alpha = .5) + la
 
 ```{r}
 
-ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'APM') + scale_y_continuous(breaks = c(seq(0, 400, 25)))
+ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.5, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'APM') + scale_y_continuous(breaks = c(seq(0, 400, 25)))
 
 ```
 
@@ -279,7 +279,7 @@ ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill =
 
 
 1. *WorkersMade*
-2. *MinimapAttacks*
+2. *MinimapAttacks* / *MinimapRightClicks*
 3. *AssignToHotkeys* / *SelectByHotkeys*
 4. *TotalMapExplored*
 5. *UniqueUnitsMade*
@@ -287,7 +287,7 @@ ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill =
 7. *UniqueHotkeys*
 
 
-> It should be noted that these variables are rates expressed in "timestamps", which is the way that the game calculates time. There are approximately 88.5 timestamps per second according to the dataset documentation. Since such a short measure of time creates very small values, I will express these variables in either seconds or minutes to make the graphs easier to understand. Throughout this section, I encountered outliers for several variables that made it difficult to read the graphs. I dealt with these outlier values by removing them from the dataset. I made this decision due to these data points comprising an extremely small portion of the dataset. Also, since most of these metrics are more obscure and not discussed often in the community, it would be difficult to decide on a "reasonable" ceiling value to restrict these variables to.
+> It should be noted that these variables are rates expressed in "timestamps", which is the way that the game calculates time. There are approximately 88.5 timestamps per second according to the dataset documentation. Since such a short measure of time creates very small values, I will express these variables in minutes to make the data and graphs easier to understand. Throughout this section, I encountered outliers for several variables that made it difficult to read the graphs. I dealt with these outlier values by removing them from the dataset. I made this decision due to these data points comprising an extremely small portion of the dataset. Also, since most of these metrics are more obscure and not discussed often in the community, it would be difficult to decide on a "reasonable" ceiling value to restrict these variables to.
 
 
 > In addition, I decided to omit the *MaxTimeStamp* variable from my analysis. This variable indicates the length of each game. While there may be some correlation between how skilled a player is and his or her average game length, each player's choice in strategy has a major effect on how long a particular game will be. For example, before a game begins, a player can decide to invest significant resoures early on into doing a quick surprise attack to catch the opponent off guard. If such an attack fails, then the attacking player will be in a vulnerable position and may be defeated by the opponent's counterattack. In this case, the game is likely to end early regardless of the outcome. On the other hand, both players can just as easily decide to focus on their own army and building production while avoiding conflicts early on. Such a game would take much longer to finish. Since game length is largely affected by conscious choices that players make in addition to behavior derived from skill level, it would be difficult to isolate these two factors in orde to assess *MaxTimeStamp* as an indicator of skill level.
@@ -305,12 +305,12 @@ ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill =
 ![This graph showing the number of workers each player possesses at any given time is just one of several pages of detailed statistics that are presented to players at the conclusion of each game.](graph.jpg)
 
 
-> The violin plot below shows that there is a slightly positive correlation between how workers are produced per minute and the rank of the player. By looking at the median lines, one can see a slight downward trend going from Master to GrandMaster. A more pronounced increase can be seen when looking at the outlier values from Diamond to GrandMaster. This demonstrates that one should find the proper balance between making too few workers (collecting resources at a suboptimal rate) and making too many (wasting money by producing unneeded workers who have nothing to do). On the other end, the transition from Bronze to Silver results in the median increasing from 2.934 to 3.84, which is more than the transition between any other pairs of adjacent leagues. This supports the claim that players can be promoted out of Bronze League simply by focusing on improving their worker production habits. Meanwhile, the outlier values in Diamond league could be a sign of players producing more workers than needed, which would be an inefficient use of resources.
+> The violin plot below shows that there is a slightly positive correlation between how workers are produced per minute and the rank of the player. By looking at the median lines, one can see a slight downward trend going from Master to GrandMaster. A more pronounced increase can be seen when looking at the outlier values from Diamond to GrandMaster. This demonstrates that one should find the proper balance between making too few workers (collecting resources at a suboptimal rate) and making too many (wasting money by producing unneeded workers who have nothing to do). On the other end, the transition from Bronze to Silver results in the median increasing from 2.934 to 3.84, which is more than the transition between any other pairs of adjacent leagues. This supports the claim that players can be promoted out of Bronze League simply by focusing on improving their worker production habits. Meanwhile, worker production rates level out at the higher leagues. The outlier values in Diamond league could be a sign of players producing more workers than needed, which would be an inefficient use of resources.
 
 
 ```{r warning=FALSE, message=FALSE}
 
-ggplot(sc, aes(sc$League, sc$WorkersMade*88.5*60)) + geom_violin(fill = 'purple', alpha = 0.5, draw_quantiles = c(0.5)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Workers Produced per Minute') + scale_y_continuous(breaks = c(seq(0,30, 2)))
+ggplot(sc, aes(sc$League, sc$WorkersMade*88.5*60)) + geom_violin(fill = 'purple', alpha = 0.5, draw_quantiles = c(0.5)) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.5, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Workers Produced per Minute') + scale_y_continuous(breaks = c(seq(0,30, 2)))
 
 #Display summary statistics for "WorkersMade" for each league
 
@@ -322,10 +322,10 @@ for(league in rank) {
 ```
 
 
-###2) *MinimapAttacks*
+###2) *MinimapAttacks* / *MinimapRightClicks*
 
 
-> The second most important metric might be a surprising choice as well. The minimap is a map of the battlefield located on the bottom left corner of the user interface (as shown in the first gameplay screenshot in the introduction section). At a glance, players can see what is happening wherever he has an army presence. By clicking on the minimap, players can instantly switch views to the corresponding location. More importantly, he or she can order units to move to or attack that location. With the minimap, players can observe and react to situations occurring in the game faster and more efficiently. This difference can be compared to the difference between editing a long document with ability to jump to different sections by clicking or scrolling with a mouse versus having to manually scroll through the text using the arrow keys on the keyboard.
+> The second most important metric might be a surprising choice as well. The minimap is a map of the battlefield located on the bottom left corner of the user interface (as shown in the first gameplay screenshot in the introduction section). At a glance, players can see what is happening wherever he has an army presence. By clicking on the minimap, players can instantly switch views to the corresponding location. More importantly, he or she can order units to move to or attack that location. The alternative is for the player to manually scroll to that location with the mouse,which could take much longer depending on how big the battlefield is and where the playter was looking prior to scrolling. With the minimap, players can observe and react to situations occurring in the game faster and more efficiently. This difference can be compared to the difference between editing a long document with ability to jump to different sections by clicking or scrolling with a mouse versus having to manually scroll through the text using the arrow keys on the keyboard.
 
 
 ![This is the interface through which players interact with their bases and armies in Starcraft II. The minimap is positioned at the bottom left corner.](minimap.jpg)
@@ -333,13 +333,16 @@ for(league in rank) {
 
 ```{r}
 
-ggplot(sc, aes(sc$League, sc$MinimapAttacks*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Minimap Attacks Issued per Minute')
+ggplot(sc, aes(sc$League, sc$MinimapAttacks*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.5, aes(group = 1)) +  theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Minimap Attacks Issued per Minute')
+
+
+ggplot(sc, aes(sc$League, sc$MinimapRightClicks*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.5, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Minimap Right Clicks Performed per Minute')
 
 
 ```
 
 
-> There are a few outlier data points (17/3395) that are obscuring the view of the league distributions. After removing those points, the distribution can be more clearly seen:
+> There are a few outlier data points that are obscuring the view of the league distributions for *MinimapAttacks* (17/3395) and *MinimapRightClicks* (7/3395). After removing these points, the distributions can be more clearly seen:
 
 
 ```{r}
@@ -348,7 +351,7 @@ ggplot(sc, aes(sc$League, sc$MinimapAttacks*88.5*60)) + geom_boxplot(outlier.col
 
 sc <- filter(sc, sc$MinimapAttacks <= 0.001003)
 
-ggplot(sc, aes(sc$League, sc$MinimapAttacks*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Minimap Attacks Issued per Minute') + scale_y_continuous(breaks = c(seq(0,7, 0.25)))
+ggplot(sc, aes(sc$League, sc$MinimapAttacks*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.5, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Minimap Attacks Issued per Minute') + scale_y_continuous(breaks = c(seq(0,7, 0.25)))
 
 for(league in rank) {
   print(league)
@@ -358,7 +361,23 @@ for(league in rank) {
 ```
 
 
-> In this case, there's a positive correlation that appears to increase with the leagues. The increase in the median between Master and GrandMaster (0.4867 to 1.277) shows the importance of using the minimap to attain the highest level of skill. On the other end, the median also changes significantly from Bronze to Silver (o to 0.07434), which supports the belief that at least some minimap usage can be enough to be promoted out of Bronze League.
+```{r}
+
+#Remove the "MinimapRightClicks" outlier values and convert the values in terms of minutes
+
+sc <- filter(sc, sc$MinimapRightClicks <= 0.0028)
+
+ggplot(sc, aes(sc$League, sc$MinimapRightClicks*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.5, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Minimap Right Clicks Performed per Minute') + scale_y_continuous(breaks = c(seq(0, 15, 1)))
+
+for(league in rank) {
+  print(league)
+  print(summary(filter(sc, sc$League == league)$MinimapRightClicks*88.5*60))
+}
+
+```
+
+
+> In both cases, there's a positive correlation that appears to increase with the leagues. For *MinimapAttacks*, the slope of the LOESS line increases at the upper leagues. The large increase in the median between Master and GrandMaster (0.4867 to 1.277) shows the importance of using the minimap in attaining the highest level of skill. On the other end, the median also changes significantly from Bronze to Silver (o to 0.07434), which supports the belief that at least some minimap usage can be enough to be promoted out of Bronze League. It seems that many players from Bronze all the way to Platinum League don't issue attack commands through the minimap or do so very rarely. For *MinimapRightClicks*, the variation between leagues isn't as pronounced, with a roughly linear LOESS line. In the lower leagues, the median value of 0.8103 for Bronze League indicates that this is an action that most novice players already know to do. Therefore they just need to learn to do so more often.
 
 
 ###3) *AssignToHotkeys* and *SelectByHotkeys*
@@ -383,7 +402,7 @@ ggplot(sc, aes(sc$League, sc$AssignToHotkeys*88.5*60)) + geom_boxplot(outlier.co
 
 sc <- filter(sc, sc$AssignToHotkeys*88.5*60 <= 6.5)
 
-ggplot(sc, aes(sc$League, sc$AssignToHotkeys*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Hotkey Assignments Made per Minute') + scale_y_continuous(breaks = c(seq(0,7, 0.5)))
+ggplot(sc, aes(sc$League, sc$AssignToHotkeys*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.5, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Hotkey Assignments Made per Minute') + scale_y_continuous(breaks = c(seq(0,7, 0.5)))
 
 for(league in rank) {
   print(league)
@@ -405,9 +424,11 @@ ggplot(sc, aes(sc$League, sc$SelectByHotkeys*88.5*60)) + geom_boxplot(outlier.co
 
 ```{r}
 
+#Remove outlier values for the "SelectByHotkeys" variable
+
 sc <- filter(sc, sc$SelectByHotkeys*88.5*60 < 150)
 
-ggplot(sc, aes(sc$League, sc$SelectByHotkeys*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Hotkey Groups Selected per Minute') + scale_y_continuous(breaks = c(seq(0,200, 25)))
+ggplot(sc, aes(sc$League, sc$SelectByHotkeys*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Hotkey Groups Selected per Minute') + scale_y_continuous(breaks = c(seq(0,200, 25)))
 
 for(league in rank) {
   print(league)
@@ -417,7 +438,7 @@ for(league in rank) {
 ```
 
 
-> In Bronze and Silver League, the median and mean values for *AssignToHotkeys* are close to 1. From my experience with the game, this reflects the habit of assigning one's entire army to one hotkey and updating the assignment by adding newly produced units to that hotkey group. Players who control their entire army as a single large mass mostly do so because they lack the multitasking skills to effectively control multiple groups at a time. This setup makes it difficult for them to split their units up to deal with threats occurring simultaneously in different places. The median and mean values for *SelectByHotkeys* in the lower leagues are similarly low due to the fact that there's no need to make too many hotkey selections when your entire army is assigned to only one or two hotkey groups. This type of habit seems to disappear as one progresses through the leagues. Comparing the lower leagues to the higher ones indicates that these variables are more important in being promoted from the middle leagues. The differences between the Diamond, Master, and GrandMaster League distributions are quite pronounced. This illustrates the importance of multitasking in SC2, and specifically, the importance of maintaining many hotkey groups and continuously selecting them to issue orders to attack and defend.
+> In Bronze and Silver League, the median and mean values for *AssignToHotkeys* are close to 1. From my experience with the game, this reflects the habit of assigning one's entire army to one hotkey and updating the assignment by adding newly produced units to that hotkey group. Players who control their entire army as a single large mass mostly do so because they lack the multitasking skills to effectively control multiple groups at a time. However, this setup makes it difficult for them to split their units up to deal with threats occurring simultaneously in different places. The median and mean values for *SelectByHotkeys* in the lower leagues are similarly low due to the fact that there's no need to make too many hotkey selections when your entire army is assigned to only one or two hotkey groups. This type of habit seems to disappear as one progresses through the leagues. Comparing the lower leagues to the higher ones indicates that these variables are more important in being promoted from the middle leagues. The differences between the Diamond, Master, and GrandMaster League distributions are quite pronounced. This illustrates the importance of multitasking in SC2, and specifically, the importance of maintaining many hotkey groups and continuously selecting them to issue orders to attack and defend.
 
 
 ###4) *TotalMapExplored*
@@ -426,41 +447,120 @@ for(league in rank) {
 > The need for intelligence gathering during battles should be apparent. As a consequence of games happening under the fog of war, players have an incentive to constantly scout and observe the opposing player's actions while hiding their own actions from enemy scouts. As previously mentioned, players can decide to perform sneak attacks early in a game to win the game quickly and decisively. Even in slower paced games, one should be aware of what kind of army the opponent is producing and where that army is moving. In SC2, each army unit has a "rock, paper, scissors" relationship with other types types of units, meaning that each unit is effective at fighting certain types of units while being ineffective against other types of units. Thus, by keeping watch of the opponent's army, one can respond by producing the types of units that are effective against the opposing army.
 
 
-> In SC2, the battlefield is divided into squares that are about the size of the mouse pointer. The *TotalMapExplored* metric measures how many 24x24 grids of these squares a player has explored per timestamp. 
+> In SC2, the battlefield is divided into squares that are about the size of the mouse pointer. The *TotalMapExplored* metric measures how many 24x24 grids of these squares a player has explored per timestamp. During the course of a game, players will naturally explore territory by virtue of expanding to new bases to collect more resources and sending their army to attack the opponent. However, a skilled player will go beyond this and intentionally send units to different parts of the map to confirm what the opponent is doing and to make sure that no sneak attacks are incoming. Timely information received from scouting can mean the difference between victory and defeat in many games.
 
 
 ```{r}
 
 ggplot(sc, aes(sc$League, sc$TotalMapExplored*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Number of 24x24 Map Grids Explored per Minute')+ scale_y_continuous(breaks = c(seq(0,5, 0.25)))
 
+```
+
+
+> The league distribution medians seem to be increasing almost linearly, but I'd like to remove the few outlier values (2/3395) greater than 4.00 to make sure there isn't a polynomial increase being obscured.
+
+
+```{r}
+
+sc <- filter(sc, sc$TotalMapExplored < 0.00074)
+
+ggplot(sc, aes(sc$League, sc$TotalMapExplored*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Number of 24x24 Map Grids Explored per Minute') + scale_y_continuous(breaks = c(seq(0,5, 0.25)))
+
 for(league in rank) {
   print(league)
   print(summary(filter(sc, sc$League == league)$TotalMapExplored*88.5*60))
 }
 
-
 ```
 
 
+> There's as relatively large increase in the median going from Bronze to Silver League which indicates that Silver League players leave their bases more often, though it's unclear whether this is the result of purposeful scouting or just a consequence of being more active on the battlefield when performing other actions. Past Bronze League, it looks like the distributions are relatively until the middle, according to the LOESS line. Knowing to scout seems to be a a skill that's acquired when transitioning from the Gold to Platinum Leagues. The transition from Master to GrandMaster League shows another relatively large median increase, which indicates that scouting is a crucial skill to acquire in order to reach the highest skill level.
+
+
 ###5) *UniqueUnitsMade*
+
+
+> At first, I thought this variable measured the rate that players were producing units. However, upon converting the values to reflect minutes rather than timestamps, I saw that the variables were much too low, considering that games typically last for 15-25 minutes and armies often consist of dozens of units. 
+
+
+```{r}
+
+ggplot(sc, aes(sc$League, sc$UniqueUnitsMade*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Number of 24x24 Map Grids Explored per Minute')
+
+```
 
 
 
 ###6) *ComplexAbilitiesUsed* / *ComplexUnitsMade*
 
 
+> In SC2, there is a heirarchy in which all the different types of buildings and army units belong, called the "tech tree". In the tech tree, buildings and units further up the tree can only be accessed once certain buildings further down in the tech tree have been constructed. This network of dependencies ensures that the inexpensive, low-tech buildings and units are accessible relatively early in the game, whereas the most powerful and expensive units are reserved for later in the game. Often, these units have devastating abilities that can be used repeatedly (with a predetermined recharge period in between uses) to devastate an opposing army if used correctly. This depends on the player manually clicking on the intended target in an accurate and timely manner. Otherwise, the attack misses its target and is wasted.
+ 
+ 
+
 ![Several units have activated abilities that must be triggered at the right time or targeted abilities that require the player to directly click on the area or unit to be targeted.](complex.jpg)
+
+
+> *ComplexAbilitiesUsed* measures how often a player uses such targeted abilities, whereas *ComplexUnitsMade* measures the rate at which these advanced units are produced. Properly utilizing these units and abilities requires another layer of micromanagement on top of everything else that a player needs to attend to during a game. Therefore, one would think that higher skilled players will use them with greater frequency.
+
+
+```{r}
+
+ggplot(sc, aes(sc$League, sc$ComplexAbilityUsed*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Targeted Abilities Used per Minute')
+
+ggplot(sc, aes(sc$League, sc$ComplexUnitsMade*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Advanced Units Produced per Minute')
+
+```
+
+
+> Again, the lower league distributions seem like they might be obscured due to outliers (99/3395 for *ComplexAbilityUsed* and 3/3395 for *ComplexUnitsMade*).
+
+
+```{r}
+
+#Remove outlier values for "ComplexAbilityUsed" and convert the values in terms of minutes
+
+sc <- filter(sc, sc$ComplexAbilityUsed < 0.00188)
+
+ggplot(sc, aes(sc$League, sc$ComplexAbilityUsed*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Targeted Abilities Used per Minute')
+
+for(league in rank) {
+  print(league)
+  print(summary(filter(sc, sc$League == league)$ComplexAbilityUsed*88.5*60))
+}
+
+```
+
+
+```{r}
+
+#Remove outlier values for "ComplexUnitsMade" and convert the values in terms of minutes
+
+sc <- filter(sc, sc$ComplexUnitsMade < 0.00075)
+
+ggplot(sc, aes(sc$League, sc$ComplexUnitsMade*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Advanced Units Produced per Minute')
+
+for(league in rank) {
+  print(league)
+  print(summary(filter(sc, sc$League == league)$ComplexUnitsMade*88.5*60))
+}
+
+```
+
+
+
+> It appears that the lower league distributions for these two variables truly do look that, meaning that players in Bronze or Silver League use these advanced units and their abilities extremely rarely. In fact, the median values of *ComplexUnitsMade* for each distribution is 0. When looking at the means for each league, there's a positive correlation from Bronze to Master League followed by a slight decrease in GrandMaster League. Therefore, these seem to be additional examples of skills that are not particularly used in the lower leagues but are used much more often among more skilled players.
 
 
 ###7) *UniqueHotkeys*
 
 
-
+> Originally, I had ranked this metric in second place on the skill heirarchy. From the variable name and description from the researchers, I thought that this variable measured how often players used different hotkeys to input commands. However, when I converted the variables in terms of minutes, the values were much too low to make sense when placed in the context of APM and the other hotkey variables. For example, how could a GrandMaster player be using less than one unique hotkey per minute when he is most likely performing over 150 actions per minute? Upon consulting with my friend, we came to the conclusion that this metric actually measures the rate at which hotkeys that the player changed from the default settings. For example, players can change certain hotkey settings so that commonly used commands are assigned to neighboring keys on the keyboard to facilitate the issuing of commands. Conversely, a player can also decide to reassign a little used command as to avoid accidentally pressing it during hectic periods in the game. Given that there's a steep learning curve involved in transitioning from not using hotkeys at all, beginning to use them, committing them to memory so that one can use them quickly and comfortably, to finally understanding one's needs and customizing his or her hotkey setup to match that need, I would expect that there wouldn't be much of a difference in the lower league distributions for this metric, but there would be a pronounced difference in the upper league distributions.
 
 
 ```{r}
 
-ggplot(sc, aes(sc$League, sc$UniqueHotkeys*88.5*60*10)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Unique Hotkeys Used per Minute') 
+ggplot(sc, aes(sc$League, sc$UniqueHotkeys*88.5*60)) + geom_boxplot(outlier.color = 'blue', fill = 'purple', alpha = 0.5) + geom_smooth(method = 'loess', se = FALSE, color = 'blue', size = 1.2, aes(group = 1)) + theme(panel.background = element_rect(fill = 'white'), panel.grid.major =  element_line(color = 'gray')) + labs(x = 'League', y = 'Unique Hotkeys Used per Minute') 
 
 #Display summary statistics for "UniqueHotkeys" for each league
 
@@ -472,7 +572,9 @@ for(league in rank) {
 ```
 
 
-> 
+> The data seems to support my intuition. In the Lower Leagues, the LOESS line increases quite slowly, but suddenly increases in slow when transitioning from Platinum to Diamond League. It seems that this variable is not so important for less skilled player, but it's a deciding factor for how skilled players are in the upper leagues.
+
+
 
 
 ##6. Conclusion
