@@ -279,6 +279,11 @@ ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill =
 ##4. Executive Summary
 
 
+> My main goal with this project were to either prove or disprove the heirarchy of skills that is often touted within the SC2 community as well as to observe the effects that time, in the form of player age and hours spent playing SC2, had on these skills. From my analysis of the dataset, I concluded that the heirarchy and its ordering of skills is mostly accurate. Also, I discovered that time appears to only have a noticeable effect on a specific subset of the skills.
+
+
+> This heirarchy can be thoguht of as a road map for how a player can gradually improve in skill progress through the various leagues of the online ladder system. Starting from the lowest level, Bronze League, a player should focus on learning each listed skill in the order of the heirarchy. Mastering the initial skills will allow a player to quickly rise through the lower ranks, whereas mastery of the latter skills differentiate the mid-tier players from the high-tier ones. I attempted to validate this belief by observing boxplots of the various in-game metrics and comparing the changes in median and mean values when transitioning from lower leagues to higher leagues. I drew a line of best fit to compare the rate of change between leagues and 
+
 > 
 
 
