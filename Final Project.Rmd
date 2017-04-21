@@ -2,10 +2,10 @@
 title: Examining In-Game Metric Importance and Variations in Player Skill in Starcraft
   II
 output:
-  html_notebook:
+  html_document:
     fig_height: 8
     fig_width: 10
-  html_document:
+  html_notebook:
     fig_height: 8
     fig_width: 10
 ---
@@ -41,7 +41,7 @@ output:
 2. Analyze the three self-reported time variables not derived from the replay files, *TotalHours*, *HoursPerWeek*, and *Age*.
 3. Propose an approximate order of importance among the in-game metrics included in the dataset (in terms of which skills the SC2 community deems essential for increasing skill level as opposed to what's "nice to have", similar to Maslow's hierarchy of needs).
 4. Explore these variables individually in the order proposed.
-5. Visualize these variables together with the time variables to get an imprecise idea of how these metrics changes over time.
+5. Visualize these variables together with the time variables to get an imprecise idea of how these metrics change over time.
 6. Create multivariate plots to find possible relationships between different metrics across different leagues and experience levels.
 
 ***
@@ -50,10 +50,10 @@ output:
 ##3. Analysis of Data Quality
 
 
-> The dataset used for this analysis originates from the research paper [Video Game Telemetry as a Critical Tool in the Study of Complex Skill Learning](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0075129#pone-0075129-g001) (Thompson et al, 2013) and can be found [here](http://summit.sfu.ca/item/13328). From August 12th, 2011 to September 19th, 2011, the researchers solicited members of various online SC2 community hubs for their game replay files, from which I found out about this study. Contributors were also asked to complete a survey that asked about their age, skill level, and playing habits. Since each replay file only contains information about what happens during the course of the one game that the file originated from, it is unable to provide players' personal details such as age or how long they've been playing the game. Additionally, a player's league isn't included since that information doesn't directly affect the game once the matchmaking system is done finding an opponent. The league names, in order of increasing skill, are Bronze, Silver, Gold, Platinum, Diamond, Master, and GrandMaster. Data points with a *LeagueIndex* value of 8 indicate replay files of professional games that were shared with the public. These replays were subsequently submitted to the study by community members, which is why these replays all have missing values for self-reported variables.
+> The dataset used for this analysis originates from the research paper [Video Game Telemetry as a Critical Tool in the Study of Complex Skill Learning](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0075129#pone-0075129-g001) (Thompson et al, 2013) and can be found [here](http://summit.sfu.ca/item/13328). From August 12th, 2011 to September 19th, 2011, the researchers solicited members of various online SC2 community hubs for their game replay files, from which I found out about this study. Contributors were also asked to complete a survey that asked about their age, skill level, and playing habits. Since each replay file only contains information about what happens during the course of the one game that the file originated from, it is unable to provide players' personal details such as age or how long they've been playing the game. Additionally, a player's league isn't included because that information doesn't directly affect the game once the matchmaking system is done finding an opponent. The league names, in order of increasing skill, are Bronze, Silver, Gold, Platinum, Diamond, Master, and GrandMaster. Data points with a *LeagueIndex* value of 8 indicate replay files of professional games that were shared with the public. These replays were subsequently submitted to the study by community members, which is why these replays all have missing values for self-reported variables.
 
 
-> It should be noted that "professional" simply means that those replays are of games that were played by professional players in tournaments. There is no "professional" league in the ladder system. Also, the GrandMaster League is limited to the top 200 players. It is necessary for a player to be successful in the GrandMaster League in order to play SC2 professionally, so there is a chance that professional players can be represented in both leagues in this dataset. However, this is unlikely due to their tendency to hide their identities when playing online as much as possible. This is so that their rivals don't get opportunities to study them. Therefore, it is highly unlikely that a professional player participated in this survey and willingly submitted his own replays of GrandMaster League games played online to this dataset. Due to the small sample size of professional replays in the dataset (55/3395) and the lack of accompanying player information I decided to remove these replays from the datast. 
+> It should be noted that "professional" simply means that those replays are of games that were played by professional players in tournaments. There is no "professional" league in the ladder system. Due to the small sample size of professional replays in the dataset (55/3395) and the lack of accompanying player information, I decided to remove these replays from the dataset. Additionally, the GrandMaster League is limited to the top 200 players, which explains why this league represents such a small portion of the dataset.
 
 
 > My analysis begins with loading the csv file containing the dataset and converting integer variables that were imported as factors. I then create a new variable called *rank* that adds the proper name for each player's league based on the *LeagueIndex* variable. While the variables derived from the replay files are inherently accurate, the variables derived from survey answers should be checked for inaccuracies and irregularities. 
