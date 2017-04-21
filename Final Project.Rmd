@@ -2,10 +2,10 @@
 title: Examining In-Game Metric Importance and Variations in Player Skill in Starcraft
   II
 output:
-  html_document:
+  html_notebook:
     fig_height: 8
     fig_width: 10
-  html_notebook:
+  html_document:
     fig_height: 8
     fig_width: 10
 ---
@@ -299,14 +299,16 @@ ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill =
 > With this method, I came to the conclusion that the skill heirarchy proposed by the community is supported by this dataset and should be followed by novice SC2 players that hope to improve.
 
 
-> This dataset contains three variables that measure time in different ways. One variable is the age of the player. The other two are the total hours the player has played the game and the number of hours played per week. I primarily wanted to see if there was any evidence supporting the belief that player skill deteriorates with age. Additionally, I wanted to see which player skills improve the most with additional experience playing the game. To achieve this, I used a correlation plot to show the relationships between these variables and the skill variables.
+> This dataset contains three variables that measure time in different ways. One variable is the age of the player. The other two are the total hours the player has played the game and the number of hours played per week. I primarily wanted to see if there was any evidence supporting the belief that player skill deteriorates with age. Additionally, I wanted to see which player skills improve the most with additional experience playing the game. To achieve this, I used a correlation plot to show the relationships between these variables and the skill variables. The following plot compares the time variables with the group of skill variables that they exhibited the srongest relationship with.
 
 
-![](correlations.png)
+![The 3x3 grid that forms the upper right corner shows how well three time variables explains each of the three skill variables. The farther from 0, the stronger the relationship is.](correlations.png)
 
 
-> 
+> In the above grid, each square contains a number that ranges from -1 to +1 which indicates the strength of the relationship between two variables. The farther away from 0 the number is, the stronger the relationship is. By looking at the *Age* row, we can see that since it contains negative numbers. This provides evidence supporting the belief that the skill variables are negatively affected by increasing age. On the other hand, the *TotalHours* and *HoursPerWeek* rows contain positive numbers, which hints that these three skills improve the most with additional hours spent playing.
 
+
+> It should be noted that the relationships visualized above are proof that there is only one certain way to improve at SC2 or that older players are worse at the game than younger players. They merely provide some evidence that these relationships might exist and justifies further investigation into the matter with a more comprehensive dataset and study.
 
 
 ##5. Main Analysis
@@ -751,9 +753,10 @@ grid.arrange(workers, minimapattacks, assignhotkeys, selecthotkeys, mapexplored,
 
 #Commenting out code that was preventing my notebook from knitting
 
-#subset <- data.frame(c(sc[3:5], sc[6:8]))
-#corr_subset <- cor(subset)
-#corrplot(corr_subset, method = 'number', diag = FALSE, type = 'upper', col = viridis(256), title = 'Significant #Correlations Among Skills and Time Variables', mar=c(0,0,1,0))
+subset <- data.frame(c(sc[3:5], sc[6:8]))
+corr_subset <- cor(subset)
+corrplot(corr_subset, method = 'number', diag = FALSE, type = 'upper', col = viridis(256), title = 'Significant Correlations Among Skills and Time Variables', mar=c(0,0,1,0))
+
 
 ```
 
