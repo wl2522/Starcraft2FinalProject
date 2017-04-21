@@ -111,7 +111,7 @@ summary(sc$TotalHours)
 > What immediately stands out in the summary statistics and the density plots are the maximum values for both variables. The maximum value for *HoursPerWeek* corresponds to 24 hours per day of playing time every week, while the maximum reported value of 1,000,000 for *TotalHours* far exceeds the number of hours that had elapsed since SC2 was released to the time that the data collection period concluded. When I discussed this matter with Professor Robbins, one of her suggestions was to "fence" the values such that outliers are replaced with a sensible ceiling value. From interviews of professional players as well as hearsay from those who keep in contact with them, I chose 98 hours played per week as a ceiling value. This corresponds to 14 hours played per day, which is a habit that could most likely only be sustained by professional players signed to a major team. Such teams often operate a "team house" where all the players live and train together. It is not uncommon for the sponsors to hire maids to cook and clean so that the players can focus all their attention on playing SC2. In such cases, it is not unusual for players to devote 10-14 hours per day to practicing for upcoming important matches.
 
 
-> Another suggestion was to simply remove these outliers from the dataset, since the respondents might not have given a serious answer to the question. When both methods are compared side by side below, there doesn't seem to be any appreciable difference due to the small number of outliers (56 out of 3,339). As for the single data point with a value of 0 hours per week, I interpreted that as the respondent playing the game very infrequently. Because there was only one such data point and the fact that the next closest value is 2, I decided not to remove it. 
+> Another suggestion was to simply remove these outliers from the dataset, since the respondents might not have given a serious answer to the question. When both methods are compared side by side below, there doesn't seem to be any appreciable difference due to the small number of outliers (56/3339). As for the single data point with a value of 0 hours per week, I interpreted that as the respondent playing the game very infrequently. Because there was only one such data point and the fact that the next closest value is 2, I decided not to remove it. 
 
 
 ```{r warning=FALSE, message=FALSE}
@@ -189,7 +189,7 @@ ggplot() + geom_density(data = sc_remove, aes(x = sc_remove$TotalHours), bw = 75
 ```
 
 
-> By removing the outlier values, the tail small bump at 4,000 hours is noticeably reduced. The distribution for *TotalHours* looks to have a larger variance compared to that of *HoursPerWeek*. Both distributions are similarly right-skewed, which is to be expected since these two variables are most certainly correlated. Depending on the parameter settings for the density plot and histogram, there might be evidence of bimodality, with a distinct mode of approximately 450 and another possible one of at approximately 700. The mean of 639.2 corresponds to approximately 1.5 hours of SC2 per day, which translates to around four average length 1 vs. 1 matches. 
+> By removing the outlier values, the small bump at 4,000 hours is noticeably reduced. The distribution for *TotalHours* looks to have a larger variance compared to that of *HoursPerWeek*. Both distributions are similarly right-skewed, which is to be expected since these two variables are most certainly correlated. Depending on the parameter settings for the density plot and histogram, there might be evidence of bimodality, with a distinct mode of approximately 450 and another possible one at approximately 700. The mean of 639.2 corresponds to approximately 1.5 hours of SC2 per day, which translates to around four average length 1 vs. 1 matches. 
 
 
 ###*Age*
@@ -225,7 +225,7 @@ ggplot(sc, aes(sc$Age)) + geom_density(bw = .5, fill = 'purple', alpha = .5) + l
 ![Players must be able to click on the right parts of the screen at the right time while reacting to what the opponent is doing.](APM.jpg)
 
 
-> Proceeding to the in-game metrics, I feel that the most obvious one to explore is *APM*, short for Actions Per Minute. An action is defined to be any key press or mouse click performed by the player. In SC2, *APM* is almost synonymous with level skill. It is typically understood that if a player can't perform actions at a rate that is comparable to that of the opponent, then he or she simply can't keep up and will eventually be overwhelmed due to the fact that the opponent can accomplish more in the same amount of time. The description accompanying this dataset does not specify whether the included *APM* values are average or maximum values achieved during each game. I assume that they represent average values since average APM is one of the metrics that the game presents to the player at the conclusion of each game.
+> Proceeding to the in-game metrics, I feel that the most obvious one to explore is *APM*, short for Actions per Minute. An action is defined to be any key press or mouse click performed by the player. In SC2, *APM* is almost synonymous with skill level. It is typically understood that if a player can't perform actions at a rate that is comparable to that of the opponent, then he or she simply can't keep up and will eventually be overwhelmed due to the fact that the opponent can accomplish more in the same amount of time. The description accompanying this dataset does not specify whether the included *APM* values are average or maximum values achieved during each game. I assume that they represent average values since average APM is one of the metrics that the game presents to the player at the conclusion of each game.
 
 
 > During battles, a skilled player should be able to position his army properly and micromanage several units simultaneously without neglecting the more mundane tasks of producing workers and constructing buildings back at base. Winning a battle while forgetting to manage one's bases could leave one in a worse position and allow the opponent to catch up in the near future.
@@ -239,7 +239,7 @@ ggplot(sc, aes(sc$APM)) + geom_density(bw = 3, fill = 'purple', alpha = .5) + la
 ```
 
 
-> The distribution for *APM* looks to be approximately normally distributed, with a median of 108 and a mean of 117. The slope  on the left side is much steeper, with a minimum value of 20. This sounds reasonable, since 20 actions per minute can be achieved by nearly any able-bodied person using a computer without much effort. On the other end, we see some values exceeding 360, which translates to a sustained rate of 6 actions per second. Though there have been a few professional players who were known for consistently attaining such exceptionally high APM values, it could also be the case that the *APM* outlier values in this dataset are due to some players inflating their APM by rapidly performing meaningless actions, such as clicking empty spaces. Often, players do this at the beginning of a game to warm up their hand muscles since there's typically not much to do at such an early stage of a game. However, it could be the case that some players continue doing this throughout their games, possibly with the intention of inflating their APM rate. A few years after these replays were collected, an improved APM measurement that filters out such meaningless actions was added to the game. Using that metric, we would be unlikely to see such extreme values.
+> The distribution for *APM* looks to be approximately normally distributed, with a median of 108 and a mean of 117. The slope  on the left side is much steeper, with a minimum value of 20. This sounds reasonable, since 20 actions per minute can be achieved by nearly any able-bodied person using a computer without much effort. On the other end, we see some values exceeding 360, which translates to a sustained rate of 6 actions per second. Though there have been a few professional players who were known for consistently attaining such exceptionally high APM values, it could also be the case that the *APM* outlier values in this dataset are due to some players inflating their APM by rapidly performing meaningless actions, such as clicking empty spaces. Often, players do this at the beginning of a game to warm up their hand muscles since there's typically not much to do at such an early stage. However, it could be the case that some players continue doing this throughout their games, possibly with the intention of inflating their APM rate. A few years after these replays were collected, an improved APM measurement that filters out such meaningless actions was added to the game. Using that metric, we would be unlikely to see such extreme values.
 
 
 ```{r warning=FALSE, message=FALSE}
@@ -249,7 +249,7 @@ ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill =
 ```
 
 
-> Plotting the distribution of APM versus league rank supports the idea these outlier *APM* values were artificially inflated. They originate from players in Diamond and Master League, which is far from the highest levels of competitive play. These outliers are far removed from the median values of their respective leagues. The fact that several values exceed even the highest APM for GrandMaster players suggests that they are not realistically attainable values for players in these leagues. Therefore, I decided to remove data points where *APM* values exceed 275, which is the approximate median value for the professional players represented in this dataset.
+> Plotting the distribution of APM versus league supports the idea these outlier *APM* values were artificially inflated. They originate from players in Diamond and Master League, which is far from the highest levels of professional play. These outliers are far removed from the median values of their respective leagues. The fact that several values exceed even the highest APM for GrandMaster players suggests that they are not realistically attainable values for players in these leagues. Therefore, I decided to remove data points belonging to these two leagues where *APM* values exceed 275, which is the approximate median value for the professional players represented in this dataset.
 
 
 ```{r warning=FALSE, message=FALSE}
@@ -273,22 +273,22 @@ ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill =
 
 
 
-> Having removed these outlier values, the shape of the density plot did not change much, but the boxplot looks more reasonable. There is a positive correlation between *League* and *APM* that supports the idea that APM is a reasonable indicator of skill level. However, it should be noted that player actions can rarely be accurately categorized as either "meaningful" or "meaningless". There are often several events happening simultaneously across the battlefield that demand a player's attention. SC2 expertise heavily depends on the ability to prioritize these events and focus attention on the most important ones. To give two extreme examples, a player who devote full attention to only controlling a single unit at a time will most likely not win too many games, much like a player who instantly shifts his or her attention to the latest event without any prioritization. Even with "meaningful" actions, the decisions that a player makes can be judged on a continuous scale of effectiveness that depends on the context of what is happening and what the player knows at that moment. In broadcasted games, commentators are expected to analyze these decisions and point out which ones they think are wise or unwise. Thus, one cannot declare that one player is definitely better than another player based solely on a comparison of APM.
+> Having removed these outlier values, the shape of the density plot did not change much, but the boxplot looks more reasonable. There is a positive correlation between *League* and *APM* that supports the idea that APM is a reasonable indicator of skill level. However, it should be noted that player actions can rarely be accurately categorized as either "meaningful" or "meaningless". There are often several events happening simultaneously across the battlefield that demand a player's attention. SC2 expertise heavily depends on the ability to prioritize these events and focus attention on the most important ones. To give two extreme examples, a player who devotes full attention to only controlling a single unit at a time will most likely not win too many games, much like a player who instantly shifts his or her attention to the latest event without any prioritization. Even with "meaningful" actions, the decisions that a player makes can be judged on a continuous scale of effectiveness that depends on the context of what is happening and what the player knows at that moment. In broadcasted games, commentators are expected to analyze these decisions and point out which ones they think are wise or unwise. Thus, one cannot declare that one player is definitely better than another player based solely on a comparison of APM.
 
 
 ##4. Executive Summary
 
 
-> My main goal with this project were to either prove or disprove the heirarchy of skills that is often touted within the SC2 community as well as to observe the effects that time, in the form of player age and hours spent playing SC2, had on these skills. From my analysis of the dataset, I concluded that the heirarchy and its ordering of skills is mostly accurate. I also discovered that time appears to only have a noticeable effect on a specific subset of the skills.
+> My main goals with this project were to either prove or disprove the hierarchy of skills that is often touted within the SC2 community as well as to observe the effects that time, in the form of player age and hours spent playing SC2, had on these skills. From my analysis of the dataset, I concluded that the hierarchy and its ordering of skills is mostly accurate. I also discovered that time appears to only have a noticeable effect on a specific subset of the skills.
 
 
-> The heirarchy of skills can be thought of as a road map for how a player can gradually improve in skill progress through the various leagues of the online ladder system. Starting from the lowest level, Bronze League, a player should focus on learning each listed skill in the order of the heirarchy. Mastering the initial skills will allow a player to quickly rise through the lower ranks, whereas mastery of the latter skills differentiate the mid-tier players from the high-tier ones. More specifically, players should prioritize learning skills that will allow them to leave Bronze League and enter the mid-tier leagues. Once they have the necessary foundational skills, they can devote effort in learning skills that will allow to advance to the upper leagues.
+> The hierarchy of skills can be thought of as a road map for how a player can gradually improve in skill through the various leagues of the online ladder system. Starting from the lowest level, Bronze League, a player should focus on learning each listed skill in the order of the hierarchy. Mastering the initial skills will allow a player to quickly rise through the lower ranks, whereas mastery of the latter skills differentiate the mid-tier players from the high-tier ones. More specifically, players should prioritize learning skills that will allow them to leave Bronze League and enter the mid-tier leagues. Once they have the necessary foundational skills, they can devote effort to learning skills that will allow them to advance to the upper leagues.
 
 
-> I attempted to validate this skil ordering by looking at boxplots of the various in-game metrics and comparing the changes in median and mean values when transitioning from lower leagues to higher leagues. For each metric, I drew a line of best fit to observe the rate of change in that metric. Primarily, I noted the slope of the line as it transitioned between different pairs of adjacent leagues and looked for the transitions that showed steep slopes. This steepness would indicate that there is a noticeable difference in mastery of that skill between players of those two leagues. I used the following criteria to validate the relative importance of each skill in being promoted from Bronze League and moving up the ladder:
+> I attempted to validate this skill ordering by looking at boxplots of the various in-game metrics and comparing the changes in median and mean values when transitioning from lower leagues to higher leagues. For each metric, I drew a line of best fit to observe the rate of change in that metric. Primarily, I noted the slope of the line as it transitioned between different pairs of adjacent leagues and looked for the transitions that showed steep slopes. This steepness would indicate that there is a noticeable difference in mastery of that skill between players of those two leagues. I used the following criteria to validate the relative importance of each skill in being promoted from Bronze League and moving up the ladder:
 
 
-1. I deemed skills that exihibited a steep slope when transitioning through the lower leagues to be the most crucial towards improving enough to advance past the lower leagues.
+1. I deemed skills that exhibited a steep slope when transitioning through the lower leagues to be the most crucial towards improving enough to advance past the lower leagues.
 2. Next, I looked at how steep the slopes of each line were across all leagues. Lines that maintained steepness were deemed to be important for players of all skill levels.
 3. Finally, lines that were relatively flat across all leagues were deemed to be equally important across all leagues.
 
@@ -296,25 +296,25 @@ ggplot(sc, aes(sc$League, sc$APM)) + geom_boxplot(outlier.color = 'blue', fill =
 ![The ordering of the metrics was validated by observing the slopes of the lines of best fit across different leagues.](metrics_array.png)
 
 
-> With this method, I came to the conclusion that the skill heirarchy proposed by the community is supported by this dataset and should be followed by novice SC2 players that hope to improve.
+> With this method, I came to the conclusion that the skill hierarchy proposed by the community is supported by this dataset and should be followed by novice SC2 players that hope to improve.
 
 
 > This dataset contains three variables that measure time in different ways. One variable is the age of the player. The other two are the total hours the player has played the game and the number of hours played per week. I primarily wanted to see if there was any evidence supporting the belief that player skill deteriorates with age. Additionally, I wanted to see which player skills improve the most with additional experience playing the game. To achieve this, I used a correlation plot to show the relationships between these variables and the skill variables. The following plot compares the time variables with the group of skill variables that they exhibited the srongest relationship with.
 
 
-![The 3x3 grid that forms the upper right corner shows how well three time variables explains each of the three skill variables. The farther from 0, the stronger the relationship is.](correlations.png)
+![The 3x3 grid that forms the upper right corner shows how well the three time variables explains each of the three skill variables. The farther from 0, the stronger the relationship is.](correlations.png)
 
 
-> In the above grid, each square contains a number that ranges from -1 to +1 which indicates the strength of the relationship between two variables. The farther away from 0 the number is, the stronger the relationship is. By looking at the *Age* row, we can see that since it contains negative numbers. This provides evidence supporting the belief that the skill variables are negatively affected by increasing age. On the other hand, the *TotalHours* and *HoursPerWeek* rows contain positive numbers, which hints that these three skills improve the most with additional hours spent playing.
+> In the above grid, each square contains a number that ranges from -1 to +1, which indicates the strength of the relationship between two variables. The farther away from 0 the number is, the stronger the relationship is. By looking at the *Age* row, we can see that it contains negative numbers. This provides evidence supporting the belief that a player's movement (as measured by *APM*) is negatively affected by increasing age. *SelectByHotkeys* and *AssignToHotkeys*, skills that have a strong relationship with *APM*, are also negatively affected by incraesing age. On the other hand, the *TotalHours* and *HoursPerWeek* rows contain positive numbers, which hints that these three skills improve the most with additional hours spent playing.
 
 
-> It should be noted that the relationships visualized above are proof that there is only one certain way to improve at SC2 or that older players are worse at the game than younger players. They merely provide some evidence that these relationships might exist and justifies further investigation into the matter with a more comprehensive dataset and study.
+> It should be noted that the relationships visualized above are not proof that there is only one certain way to improve at SC2 or that older players are worse at the game than younger players. They merely provide some evidence that these relationships might exist and justifies further investigation into the matter with a more comprehensive dataset and study.
 
 
 ##5. Main Analysis
 
 
-> It is commonly thought that higher APM comes naturally through becoming more skilled at SC2. In the SC2 community, it is believed that there is a rough heirarchy of skills that one should acquire in order to become skilled. The variables corresponding to these skills, ranked in approximate descending order of importance, are the following:
+> It is commonly thought that higher APM comes naturally through becoming more skilled at SC2. In the SC2 community, it is believed that there is a rough hierarchy of skills that one should acquire in order to become skilled. The variables corresponding to these skills, ranked in approximate descending order of importance, are the following:
 
 
 1. *WorkersMade*
@@ -547,7 +547,7 @@ ggplot(sc, aes(sc$League, sc$UniqueUnitsMade*sc$MaxTimeStamp)) + geom_boxplot(ou
 ###6) *ComplexAbilitiesUsed* / *ComplexUnitsMade*
 
 
-> In SC2, there is a heirarchy in which all the different types of buildings and army units belong, called the "tech tree". In the tech tree, buildings and units further up the tree can only be accessed once certain buildings further down in the tech tree have been constructed. This network of dependencies ensures that the inexpensive, low-tech buildings and units are accessible relatively early in the game, whereas the most powerful and expensive units are reserved for later in the game. Often, these units have devastating abilities that can be used repeatedly (with a predetermined recharge period in between uses) to devastate an opposing army if used correctly. This depends on the player manually clicking on the intended target in an accurate and timely manner. Otherwise, the attack misses its target and is wasted.
+> In SC2, there is a hierarchy in which all the different types of buildings and army units belong, called the "tech tree". In the tech tree, buildings and units further up the tree can only be accessed once certain buildings further down in the tech tree have been constructed. This network of dependencies ensures that the inexpensive, low-tech buildings and units are accessible relatively early in the game, whereas the most powerful and expensive units are reserved for later in the game. Often, these units have devastating abilities that can be used repeatedly (with a predetermined recharge period in between uses) to devastate an opposing army if used correctly. This depends on the player manually clicking on the intended target in an accurate and timely manner. Otherwise, the attack misses its target and is wasted.
  
 
 ![Several units have activated abilities that must be triggered at the right time or targeted abilities that require the player to directly click on the area or unit to be targeted.](complex.jpg)
@@ -607,7 +607,7 @@ for(league in rank) {
 ###7) *UniqueHotkeys*
 
 
-> Originally, I had ranked this metric in second place on the skill heirarchy. From the variable name and description from the researchers, I thought that this variable measured how often players used different hotkeys to input commands. However, when I converted the variables in terms of minutes, the values were much too low to make sense when placed in the context of APM and the other hotkey variables. For example, how could a GrandMaster player be using less than one unique hotkey per minute when he is most likely performing over 150 actions per minute? Upon consulting with my friend, we came to the conclusion that this metric actually measures the rate at which hotkeys that the player changed from the default settings. For example, players can change certain hotkey settings so that commonly used commands are assigned to neighboring keys on the keyboard to facilitate the issuing of commands. Conversely, a player can also decide to reassign a little used command as to avoid accidentally pressing it during hectic periods in the game. Given that there's a steep learning curve involved in transitioning from not using hotkeys at all, beginning to use them, committing them to memory so that one can use them quickly and comfortably, to finally understanding one's needs and customizing his or her hotkey setup to match that need, I would expect that there wouldn't be much of a difference in the lower league distributions for this metric, but there would be a pronounced difference in the upper league distributions.
+> Originally, I had ranked this metric in second place on the skill hierarchy. From the variable name and description from the researchers, I thought that this variable measured how often players used different hotkeys to input commands. However, when I converted the variables in terms of minutes, the values were much too low to make sense when placed in the context of APM and the other hotkey variables. For example, how could a GrandMaster player be using less than one unique hotkey per minute when he is most likely performing over 150 actions per minute? Upon consulting with my friend, we came to the conclusion that this metric actually measures the rate at which hotkeys that the player changed from the default settings. For example, players can change certain hotkey settings so that commonly used commands are assigned to neighboring keys on the keyboard to facilitate the issuing of commands. Conversely, a player can also decide to reassign a little used command as to avoid accidentally pressing it during hectic periods in the game. Given that there's a steep learning curve involved in transitioning from not using hotkeys at all, beginning to use them, committing them to memory so that one can use them quickly and comfortably, to finally understanding one's needs and customizing his or her hotkey setup to match that need, I would expect that there wouldn't be much of a difference in the lower league distributions for this metric, but there would be a pronounced difference in the upper league distributions.
 
 
 ```{r}
@@ -659,7 +659,7 @@ corrplot.mixed(corr_total, lower = 'number', upper = 'ellipse', col = viridis(25
 ```
 
 
-> At first glance, it seems like there are some correlations between some metrics and the three time variables. More importantly, it looks like all but one of the metrics are negatively correlated with age and positively correlated with playing more hours per week and in total. Interestingly enough, for all three time variables, the three variables with the greatest magnitude correlation coefficients are *APM*, *SelectByHotkeys*, and *AssignToHotkeys*. 
+> At first glance, it seems like there are some correlations between some metrics and the three time variables. More importantly, it looks like all but one of the metrics are negatively correlated with age and positively correlated with playing more hours per week and in total. Interestingly enough, for all three time variables, the three skill variables with the greatest magnitude correlation coefficients are *APM*, *SelectByHotkeys*, and *AssignToHotkeys*. 
 
 
 ```{r}
@@ -673,10 +673,10 @@ ggplot(sc, aes(Age, AssignToHotkeys*88.5*60)) + geom_point(color = 'purple', alp
 ```
 
 
-> It should be noted that there is an obvious correlation between the two hotkey variables and *APM*, which is due to the fact that proper hotkey usage contributes greatly to having a high APM by virtue of allowing faster and more efficient actions, which save the player time that can be spent on performing more actions. Similarly, This is the case for all of the other variables show in the correlation matrix as well. Therefore, it is natural that these variables would be correlated in the same direction. 
+> It should be noted that there is an obvious correlation between the two hotkey variables and *APM*, which is due to the fact that proper hotkey usage contributes greatly to having a high APM by virtue of allowing faster and more efficient actions, which saves the player time that can be spent on performing more actions. Similarly, this is the case for all of the other variables shown in the correlation matrix as well. Therefore, it is natural that these variables would be correlated in the same direction. 
 
 
-> One can see that the variance for any given age group decreases with age due to the fact that sample size for older players is much smaller than those in their teens and early twenties. Therefore, it looks like there is some evidence that age negatively affects these metrics.
+> One can see that the variance for any given age group decreases with age due to the fact that the sample size for older players is much smaller than for players in their teens and early twenties. Therefore, it looks like there is some evidence that age negatively affects these metrics.
 
 > The only variable with a positive correlation with *Age* is *UniqueHotKeys*.
 
@@ -688,7 +688,7 @@ ggplot(sc, aes(Age, UniqueHotkeys*88.5*60)) + geom_point(color = 'purple', alpha
 ```
 
 
-> The slope of the regression line looks to be almost 0 unless one is looking closely. Therefore, it seems that age does not have much of an effect on how players customize their hotkey setup. This could be in part due to our previous finding that *UniqueHotkeys* seems to be the least important metric in the skill heirarchy.
+> The slope of the regression line looks to be almost 0 unless one is looking closely. Therefore, it seems that age does not have much of an effect on how players customize their hotkey setup. This could be in part due to our previous finding that *UniqueHotkeys* seems to be the least important metric in the skill hierarchy.
 
 
 ```{r}
@@ -716,7 +716,7 @@ ggplot(sc, aes(TotalHours, AssignToHotkeys*88.5*60)) + geom_point(color = 'purpl
 ```
 
 
-> This set of scatterplots show an even greater positive correlation between the three variables and *TotalHours*. Although these findings might not be completely accurate due to the values being self-reported, I feel that the correlation is strong enough to warrant future reearch into the relationships among these variables.
+> This set of scatterplots shows an even greater positive correlation between the three variables and *TotalHours*. Although these findings might not be completely accurate due to the values being self-reported, I feel that the correlation is strong enough to warrant future research into the relationships among these variables.
 
 
 > The following is the code used for the visualizations used in the Executive Summary section.
@@ -753,7 +753,7 @@ grid.arrange(workers, minimapattacks, assignhotkeys, selecthotkeys, mapexplored,
 
 #Commenting out code that was preventing my notebook from knitting
 
-subset <- data.frame(c(sc[3:5], sc[6:8]))
+subset <- data.frame(c(sc[3:5], sc[6:9]))
 corr_subset <- cor(subset)
 corrplot(corr_subset, method = 'number', diag = FALSE, type = 'upper', col = viridis(256), title = 'Significant Correlations Among Skills and Time Variables', mar=c(0,0,1,0))
 
